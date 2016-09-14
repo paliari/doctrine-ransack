@@ -1,0 +1,10 @@
+/vendor/
+/tmp
+.DS_Store
+*.dmg
+*.iso
+.idea/
+.buildpath
+.project
+.settings/
+.metadata

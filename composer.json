@@ -1,0 +1,15 @@
+{
+    "name": "paliari/doctrine-ransack",
+    "description": "Advanced query searching for Doctrine ORM (based on Ruby on Rails Ransack)",
+    "type": "library",
+    "require": {
+        "doctrine/orm": "^2.5"
+    },
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Marcos Paliari",
+            "email": "marcos@paliari.com.br"
+        }
+    ]
+}
