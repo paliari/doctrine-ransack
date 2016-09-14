@@ -2,9 +2,9 @@
 
 /**
  * @Entity
- * @Table(name="pessoa")
+ * @Table(name="people")
  */
-class Pessoa
+class Person extends AbstractModel
 {
 
     /**
