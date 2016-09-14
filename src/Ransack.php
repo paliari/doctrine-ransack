@@ -377,9 +377,19 @@ class Ransack
         return empty($value);
     }
 
+    /**
+     * @param string $model
+     * @param string $field
+     *
+     * @return string
+     */
     protected function getField($model, $field)
     {
-        return @$this->getEm()->getClassMetadata($model)->fieldNames[$field];
+        if (!$this->getEm()->getClassMetadata($model)->hasField($field)) {
+            throw new DomainException("Field '$model.$field' not found!");
+        }
+
+        return $this->getEm()->getClassMetadata($model)->getFieldName($field);
     }
 
 }
