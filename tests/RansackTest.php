@@ -39,6 +39,20 @@ class RansackTest extends PHPUnit_Framework_TestCase
     }
 
     /**
+     * verifica se passou field incorreto.
+     *
+     * @expectedException DomainException
+     * @expectedExceptionMessage Field 'aaaa' not found!
+     */
+    public function testException()
+    {
+        $q  = [
+            'aaaa_eq' => 'abc',
+        ];
+        User::ransack($q);
+    }
+
+    /**
      * verifica se gerou o DQL com o OR corretamente e setou os parametros.
      */
     public function testOR()
