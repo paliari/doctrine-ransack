@@ -12,6 +12,38 @@
 // your boot file of doctrine.
 \Paliari\Doctrine\Ransack::setEm($entity_manager);
 ```
+### Usage
+Your models class extends to AbstractRansackModel, example
+```php
+<?php
+
+class User extends \Paliari\Doctrine\AbstractRansackModel
+{
+    //... fields ...
+}
+
+$params = [
+    'id_lteq'        => 20,
+    'email_not_null' => null,
+    'person_name_eq' => 'abc',
+];
+$includes = [
+    'only' => ['id', 'email'],
+    'include' => [
+        'person' => [
+            'only' => ['id', 'name']
+        ]
+    ]
+];
+$qb = User::ransack($params)
+    ->includes(['only' => ['id', 'email']])
+;
+$rows = $qb->setMaxResults(30)
+    ->getQuery()
+    ->getArrayResult()
+;
+
+```
 
 ## Filters
 
