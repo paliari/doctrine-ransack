@@ -53,6 +53,18 @@ class RansackTest extends PHPUnit_Framework_TestCase
     }
 
     /**
+     * @expectedException DomainException
+     * @expectedExceptionMessage Condition 'id_eqaa' not found!
+     */
+    public function testCondicionException()
+    {
+        $q  = [
+            'id_eqaa' => 'abc',
+        ];
+        User::ransack($q);
+    }
+
+    /**
      * verifica se gerou o DQL com o OR corretamente e setou os parametros.
      */
     public function testOR()
@@ -94,6 +106,20 @@ class RansackTest extends PHPUnit_Framework_TestCase
         $qb = User::ransack($q);
         $this->assertEquals($count, $qb->getParameters()->count());
         $this->assertEquals(count($q), substr_count($qb->getDQL(), 't.email'));
+    }
+
+    public function testBlank()
+    {
+        $rs = new \Paliari\Doctrine\Ransack();
+        $r  = new \ReflectionClass($rs);
+        $m  = $r->getMethod('blank');
+        $m->setAccessible(true);
+        foreach ([null, '', []] as $v) {
+            $this->assertTrue($m->invokeArgs($rs, [$v]));
+        }
+        foreach ([0, '0', ' ', '1', 1, -1] as $v) {
+            $this->assertFalse($m->invokeArgs($rs, [$v]));
+        }
     }
 
     /**
