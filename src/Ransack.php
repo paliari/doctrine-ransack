@@ -359,8 +359,7 @@ class Ransack
                 $keys = [];
             }
         }
-
-        return null;
+        throw new DomainException("Field '$field' not found!");
     }
 
     /**
