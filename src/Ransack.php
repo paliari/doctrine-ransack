@@ -88,7 +88,7 @@ class Ransack
      * @param string $model
      * @param array  $params
      *
-     * @return QueryBuilder
+     * @return RansackQueryBuilder
      */
     public function query($model, $params = [])
     {
