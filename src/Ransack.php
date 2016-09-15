@@ -79,7 +79,6 @@ class Ransack
     public static function setEm($em)
     {
         static::$_EM = $em;
-
     }
 
     /**
