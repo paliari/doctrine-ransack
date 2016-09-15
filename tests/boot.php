@@ -24,4 +24,4 @@ $config->setProxyDir(__DIR__ . '/../tmp/proxies');
 $config->setProxyNamespace('Proxies');
 $config->setAutoGenerateProxyClasses(true);
 $em = EntityManager::create($params, $config);
-\Paliari\Doctrine\Ransack::instance()->setEm($em);
+\Paliari\Doctrine\Ransack::setEm($em);

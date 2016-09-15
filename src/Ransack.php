@@ -15,7 +15,7 @@ class Ransack
     /**
      * @var EntityManager
      */
-    protected $_em;
+    protected static $_EM;
 
     protected $pattern;
 
@@ -42,7 +42,7 @@ class Ransack
     protected $alias = 't';
 
     /**
-     * @var QueryBuilder
+     * @var RansackQueryBuilder
      */
     protected $qb;
 
@@ -66,9 +66,9 @@ class Ransack
     /**
      * @return EntityManager
      */
-    public function getEm()
+    public static function getEm()
     {
-        return $this->_em;
+        return static::$_EM;
     }
 
     /**
@@ -76,11 +76,10 @@ class Ransack
      *
      * @return $this
      */
-    public function setEm($em)
+    public static function setEm($em)
     {
-        $this->_em = $em;
+        static::$_EM = $em;
 
-        return $this;
     }
 
     /**
@@ -95,7 +94,7 @@ class Ransack
     {
         $this->left_joins = [];
         $this->model      = $model;
-        $this->qb         = $this->createQB($model);
+        $this->qb         = $this->createQB($model)->select($this->alias);
         $this->filters($params);
 
         return $this->qb;
@@ -112,7 +111,7 @@ class Ransack
             throw new DomainException('EntityManager cannot be null! Use the method Ransack::instance()->setEm($em).');
         }
 
-        return $this->getEm()->createQueryBuilder()->from($model, $this->alias)->select($this->alias);
+        return RansackQueryBuilder::create($this->getEm(), $model, $this->alias);
     }
 
     /**
@@ -199,35 +198,7 @@ class Ransack
      */
     protected function leftJoin($alias, $fk)
     {
-        $this->tryLeftJoin($alias, $fk);
-    }
-
-    /**
-     * @param string $parentAlias
-     * @param string $fk
-     *
-     * @return $this
-     */
-    protected function tryLeftJoin($parentAlias, $fk)
-    {
-        $alias = $this->prepareAliasFK($parentAlias, $fk);
-        if (!isset($this->left_joins[$alias])) {
-            $this->qb->leftJoin("$parentAlias.$fk", $alias);
-            $this->left_joins[$alias] = true;
-        }
-
-        return $this;
-    }
-
-    /**
-     * @param string $parentAlias
-     * @param string $fk
-     *
-     * @return string
-     */
-    protected function prepareAliasFK($parentAlias, $fk)
-    {
-        return "{$parentAlias}_$fk";
+        $this->qb->tryLeftJoin($alias, $fk);
     }
 
     /**

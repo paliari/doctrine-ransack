@@ -11,14 +11,6 @@ class RansackQueryBuilder extends QueryBuilder
 
     /**
      * @param EntityManager $em
-     */
-    public function __construct(EntityManager $em = null)
-    {
-        parent::__construct($em ?: Ransack::instance()->getEm());
-    }
-
-    /**
-     * @param EntityManager $em
      * @param string        $model_name
      * @param string        $alias
      *
