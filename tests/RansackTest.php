@@ -83,11 +83,13 @@ class RansackTest extends PHPUnit_Framework_TestCase
         $expr  = $p->getValue($rs);
         $q     = [];
         $count = 0;
+        $qb = User::ransack($q);
         foreach ($expr as $k => $v) {
             $q["email_$k"] = '1';
             if (substr($k, -4) != 'null') {
                 $count++;
             }
+            $this->assertNotFalse(method_exists($qb->expr(), $v));
         }
         $qb = User::ransack($q);
         $this->assertEquals($count, $qb->getParameters()->count());
