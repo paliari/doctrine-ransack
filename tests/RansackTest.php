@@ -150,6 +150,18 @@ class RansackTest extends PHPUnit_Framework_TestCase
         $m->invokeArgs($rs, ['person.aaa.aa']);
     }
 
+    public function testExtractFksUnderline()
+    {
+        $rs = new \Paliari\Doctrine\Ransack();
+        $r  = new \ReflectionClass($rs);
+        $m  = $r->getMethod('extractFksUnderline');
+        $m->setAccessible(true);
+        $p = $r->getProperty('model');
+        $p->setAccessible(true);
+        $p->setValue($rs, 'User');
+        $this->assertEquals([['person', 'address'], 'street', 'string'], $m->invokeArgs($rs, ['person_address_street']));
+    }
+
     /**
      * @expectedException DomainException
      * @expectedExceptionMessage EntityManager cannot be null! Use the method Ransack::setEm($em).
