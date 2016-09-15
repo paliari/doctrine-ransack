@@ -385,11 +385,11 @@ class Ransack
      */
     protected function getField($model, $field)
     {
-        if (!$this->getEm()->getClassMetadata($model)->hasField($field)) {
-            throw new DomainException("Field '$model.$field' not found!");
+        if ($this->getEm()->getClassMetadata($model)->hasField($field)) {
+            return $this->getEm()->getClassMetadata($model)->getFieldName($field);
         }
 
-        return $this->getEm()->getClassMetadata($model)->getFieldName($field);
+        return null;
     }
 
 }
