@@ -136,6 +136,22 @@ class RansackTest extends PHPUnit_Framework_TestCase
 
     /**
      * @expectedException DomainException
+     * @expectedExceptionMessage Target Model 'aaa' not found!
+     */
+    public function testExtractFksPointException()
+    {
+        $rs = new \Paliari\Doctrine\Ransack();
+        $r  = new \ReflectionClass($rs);
+        $m  = $r->getMethod('extractFksPoint');
+        $m->setAccessible(true);
+        $p = $r->getProperty('model');
+        $p->setAccessible(true);
+        $p->setValue($rs, 'User');
+        $m->invokeArgs($rs, ['person.aaa.aa']);
+    }
+
+    /**
+     * @expectedException DomainException
      * @expectedExceptionMessage EntityManager cannot be null! Use the method Ransack::setEm($em).
      */
     public function testEM()
