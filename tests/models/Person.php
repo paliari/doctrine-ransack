@@ -21,4 +21,26 @@ class Person extends AbstractModel
      */
     public $name = '';
 
+    /**
+     * @ManyToOne(targetEntity="Address")
+     * @JoinColumn(name="address_id", referencedColumnName="id")
+     */
+    private $address;
+
+    /**
+     * @return Address
+     */
+    public function getAddress()
+    {
+        return $this->address;
+    }
+
+    /**
+     * @param Address $address
+     */
+    public function setAddress($address)
+    {
+        $this->address = $address;
+    }
+
 }
