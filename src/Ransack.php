@@ -107,7 +107,7 @@ class Ransack
     protected function createQB($model)
     {
         if (!$this->getEm()) {
-            throw new DomainException('EntityManager cannot be null! Use the method Ransack::instance()->setEm($em).');
+            throw new DomainException('EntityManager cannot be null! Use the method Ransack::setEm($em).');
         }
 
         return RansackQueryBuilder::create($this->getEm(), $model, $this->alias);

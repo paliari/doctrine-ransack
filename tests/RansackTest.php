@@ -96,4 +96,14 @@ class RansackTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(count($q), substr_count($qb->getDQL(), 't.email'));
     }
 
+    /**
+     * @expectedException DomainException
+     * @expectedExceptionMessage EntityManager cannot be null! Use the method Ransack::setEm($em).
+     */
+    public function testEM()
+    {
+        \Paliari\Doctrine\Ransack::setEm(null);
+        User::ransack([]);
+    }
+
 }
