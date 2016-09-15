@@ -4,7 +4,7 @@
  * @Entity
  * @Table(name="users")
  */
-class Usuario extends \AbstractModel
+class User extends \AbstractModel
 {
 
     /**
