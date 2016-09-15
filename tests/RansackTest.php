@@ -46,7 +46,7 @@ class RansackTest extends PHPUnit_Framework_TestCase
      */
     public function testException()
     {
-        $q  = [
+        $q = [
             'aaaa_eq' => 'abc',
         ];
         User::ransack($q);
@@ -58,7 +58,7 @@ class RansackTest extends PHPUnit_Framework_TestCase
      */
     public function testCondicionException()
     {
-        $q  = [
+        $q = [
             'id_eqaa' => 'abc',
         ];
         User::ransack($q);
@@ -95,7 +95,7 @@ class RansackTest extends PHPUnit_Framework_TestCase
         $expr  = $p->getValue($rs);
         $q     = [];
         $count = 0;
-        $qb = User::ransack($q);
+        $qb    = User::ransack($q);
         foreach ($expr as $k => $v) {
             $q["email_$k"] = '1';
             if (substr($k, -4) != 'null') {
@@ -117,9 +117,21 @@ class RansackTest extends PHPUnit_Framework_TestCase
         foreach ([null, '', []] as $v) {
             $this->assertTrue($m->invokeArgs($rs, [$v]));
         }
-        foreach ([0, '0', ' ', '1', 1, -1] as $v) {
+        foreach ([0, '0', ' ', '1', 1, -1, true] as $v) {
             $this->assertFalse($m->invokeArgs($rs, [$v]));
         }
+    }
+
+    public function testExtractFksPoint()
+    {
+        $rs = new \Paliari\Doctrine\Ransack();
+        $r  = new \ReflectionClass($rs);
+        $m  = $r->getMethod('extractFksPoint');
+        $m->setAccessible(true);
+        $p = $r->getProperty('model');
+        $p->setAccessible(true);
+        $p->setValue($rs, 'User');
+        $this->assertEquals([['person'], 'name', 'string'], $m->invokeArgs($rs, ['person.name']));
     }
 
     /**
