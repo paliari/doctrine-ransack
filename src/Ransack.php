@@ -12,11 +12,6 @@ use Doctrine\ORM\EntityManager,
 class Ransack
 {
 
-    /**
-     * @var EntityManager
-     */
-    protected static $_EM;
-
     protected $pattern;
 
     protected $expr = [
@@ -66,34 +61,25 @@ class Ransack
     /**
      * @return EntityManager
      */
-    public static function getEm()
+    public function getEm()
     {
-        return static::$_EM;
-    }
-
-    /**
-     * @param EntityManager $em
-     *
-     * @return $this
-     */
-    public static function setEm($em)
-    {
-        static::$_EM = $em;
+        return $this->qb->getEntityManager();
     }
 
     /**
      * Create a Query Builder for model with ransack filters.
      *
-     * @param string $model
-     * @param array  $params
+     * @param string              $model
+     * @param array               $params
+     * @param RansackQueryBuilder $qb
      *
      * @return RansackQueryBuilder
      */
-    public function query($model, $params = [])
+    public function query($qb, $model, $params = [])
     {
         $this->left_joins = [];
         $this->model      = $model;
-        $this->qb         = $this->createQB($model)->select($this->alias);
+        $this->qb         = $qb;
         $this->filters($params);
 
         return $this->qb;
