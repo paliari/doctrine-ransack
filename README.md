@@ -5,28 +5,52 @@
 
 #### Configuration
 
-
-```php
-<?php
-
-// your boot file of doctrine.
-\Paliari\Doctrine\Ransack::setEm($entity_manager);
-```
-### Usage
 Your models class extends to AbstractRansackModel, example
+
 ```php
 <?php
 
-class User extends \Paliari\Doctrine\AbstractRansackModel
+// Create your model extended to AbstractRansackModel.
+class YourModel extends \Paliari\Doctrine\AbstractRansackModel
 {
     //... fields ...
+    
+    // Override the method geEm is required. 
+    /**
+     * @return \Doctrine\ORM\EntityManager
+     */
+    public static function getEm()
+    {
+        // return EntityManager
+    }
+
+    /**
+     * Override this method if you need a custom query builder.
+     * @return RansackQueryBuilder
+     */
+    public static function query()
+    {
+        // return you custom Query Builder.
+    }
+
 }
+
+```
+### Usage
+
+```php
+<?php
 
 $params = [
     'id_lteq'        => 20,
     'email_not_null' => null,
     'person_name_eq' => 'abc',
 ];
+$qb = User::ransack($params);
+$rows = $qb->getQuery()->getArrayResult()
+;
+
+// Using includes
 $includes = [
     'only' => ['id', 'email'],
     'include' => [
@@ -35,13 +59,8 @@ $includes = [
         ]
     ]
 ];
-$qb = User::ransack($params)
-    ->includes(['only' => ['id', 'email']])
-;
-$rows = $qb->setMaxResults(30)
-    ->getQuery()
-    ->getArrayResult()
-;
+$rows = $qb->includes($includes)->getQuery()->getArrayResult();
+
 
 ```
 
