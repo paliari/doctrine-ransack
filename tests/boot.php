@@ -6,6 +6,7 @@ use Doctrine\ORM\Configuration,
 foreach (glob(__DIR__ . '/models/*.php') as $file) {
     include_once "$file";
 }
+include_once __DIR__ . '/EM.php';
 
 $params     = [
     'driver'        => 'pdo_mysql',
@@ -24,4 +25,4 @@ $config->setProxyDir(__DIR__ . '/../tmp/proxies');
 $config->setProxyNamespace('Proxies');
 $config->setAutoGenerateProxyClasses(true);
 $em = EntityManager::create($params, $config);
-\Paliari\Doctrine\Ransack::setEm($em);
+EM::setEm($em);
