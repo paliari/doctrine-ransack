@@ -14,9 +14,9 @@ Your models class extends to AbstractRansackModel, example
 class YourModel extends \Paliari\Doctrine\AbstractRansackModel
 {
     //... fields ...
-    
-    // Override the method geEm is required. 
+     
     /**
+     * Override the method getEm is required.
      * @return \Doctrine\ORM\EntityManager
      */
     public static function getEm()
@@ -47,8 +47,7 @@ $params = [
     'person_name_eq' => 'abc',
 ];
 $qb = User::ransack($params);
-$rows = $qb->getQuery()->getArrayResult()
-;
+$rows = $qb->getQuery()->getArrayResult();
 
 // Using includes
 $includes = [
