@@ -3,7 +3,7 @@
 /**
  * Class RansackTest
  */
-class RansackTest extends PHPUnit_Framework_TestCase
+class RansackTest extends \PHPUnit\Framework\TestCase
 {
 
     /**
@@ -131,6 +131,9 @@ class RansackTest extends PHPUnit_Framework_TestCase
         $p = $r->getProperty('model');
         $p->setAccessible(true);
         $p->setValue($rs, 'User');
+        $qb = $r->getProperty('qb');
+        $qb->setAccessible(true);
+        $qb->setValue($rs, \Paliari\Doctrine\RansackQueryBuilder::create(EM::getEm(), 'User'));
         $this->assertEquals([['person'], 'name', 'string'], $m->invokeArgs($rs, ['person.name']));
     }
 
@@ -147,6 +150,9 @@ class RansackTest extends PHPUnit_Framework_TestCase
         $p = $r->getProperty('model');
         $p->setAccessible(true);
         $p->setValue($rs, 'User');
+        $qb = $r->getProperty('qb');
+        $qb->setAccessible(true);
+        $qb->setValue($rs, \Paliari\Doctrine\RansackQueryBuilder::create(EM::getEm(), 'User'));
         $m->invokeArgs($rs, ['person.aaa.aa']);
     }
 
@@ -159,17 +165,12 @@ class RansackTest extends PHPUnit_Framework_TestCase
         $p = $r->getProperty('model');
         $p->setAccessible(true);
         $p->setValue($rs, 'User');
-        $this->assertEquals([['person', 'address'], 'street', 'string'], $m->invokeArgs($rs, ['person_address_street']));
-    }
 
-    /**
-     * @expectedException DomainException
-     * @expectedExceptionMessage EntityManager cannot be null! Use the method Ransack::setEm($em).
-     */
-    public function testEM()
-    {
-        \Paliari\Doctrine\Ransack::setEm(null);
-        User::ransack([]);
+        $qb = $r->getProperty('qb');
+        $qb->setAccessible(true);
+        $qb->setValue($rs, \Paliari\Doctrine\RansackQueryBuilder::create(EM::getEm(), 'User'));
+
+        $this->assertEquals([['person', 'address'], 'street', 'string'], $m->invokeArgs($rs, ['person_address_street']));
     }
 
 }

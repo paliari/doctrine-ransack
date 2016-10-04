@@ -3,7 +3,7 @@
 /**
  * Class RansackQueryBuilderTest
  */
-class RansackQueryBuilderTest extends PHPUnit_Framework_TestCase
+class RansackQueryBuilderTest extends \PHPUnit\Framework\TestCase
 {
 
     /**
