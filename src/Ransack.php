@@ -27,6 +27,8 @@ class Ransack
         'null'     => 'isNull',
         'matches'  => 'like',
         'cont'     => 'like',
+        'start'    => 'like',
+        'end'      => 'like',
         'order_by' => 'addOrderBy',
     ];
 
@@ -221,7 +223,9 @@ class Ransack
                 }
                 $this->qb->setParameter($key, $value);
             } else {
-                $value = 'cont' == $expr ? "%$value%" : $value;
+                if ('cont' == $expr) $value = "%$value%";
+                if ('start' == $expr) $value = "%$value";
+                if ('end' == $expr) $value = "$value%";
                 $this->qb->setParameter($key, $value, $type);
             }
 
