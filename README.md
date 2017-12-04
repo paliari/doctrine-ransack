@@ -221,6 +221,45 @@ $rows = $qb->includes($includes)->getQuery()->getArrayResult();
       WHERE table.field LIKE '%Fulano%'
       ```
 
+  - #### start (start)
+    - Example: 
+  
+      ```json
+      {"field_start": "Fulano"}
+      ```
+  
+    - SQL result: 
+  
+      ```sql 
+      WHERE table.field LIKE 'Fulano%'
+      ```
+
+  - #### end (end)
+    - Example: 
+  
+      ```json
+      {"field_end": "Fulano"}
+      ```
+  
+    - SQL result: 
+  
+      ```sql 
+      WHERE table.field LIKE '%Fulano'
+      ```
+
+  - #### order_by (order by)
+    - Example: 
+  
+      ```json
+      {"field_order_by": "desc"}
+      ```
+  
+    - SQL result: 
+  
+      ```sql 
+      ORDER BY table.field DESC
+      ```
+
 
 ## Authors
 
