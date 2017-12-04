@@ -224,8 +224,8 @@ class Ransack
                 $this->qb->setParameter($key, $value);
             } else {
                 if ('cont' == $expr) $value = "%$value%";
-                if ('start' == $expr) $value = "%$value";
-                if ('end' == $expr) $value = "$value%";
+                if ('start' == $expr) $value = "$value%";
+                if ('end' == $expr) $value = "%$value";
                 $this->qb->setParameter($key, $value, $type);
             }
 
