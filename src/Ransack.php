@@ -27,6 +27,7 @@ class Ransack
         'null'     => 'isNull',
         'matches'  => 'like',
         'cont'     => 'like',
+        'order_by' => 'addOrderBy',
     ];
 
     /**
@@ -210,6 +211,8 @@ class Ransack
         $method = $this->expr[$expr];
         if (in_array($method, ['isNotNull', 'isNull'])) {
             return $this->qb->expr()->$method("$alias.$field");
+        } elseif ('order_by' == $expr) {
+            $this->qb->addOrderBy("$alias.$field", $value);
         } else {
             $key = "{$alias}_{$field}_$expr";
             if (in_array($method, ['in', 'notIn'])) {
@@ -220,7 +223,6 @@ class Ransack
             } else {
                 $value = 'cont' == $expr ? "%$value%" : $value;
                 $this->qb->setParameter($key, $value, $type);
-
             }
 
             return $this->qb->expr()->$method("$alias.$field", ":$key");

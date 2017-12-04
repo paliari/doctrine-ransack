@@ -98,10 +98,12 @@ class RansackTest extends \PHPUnit\Framework\TestCase
         $qb    = User::ransack($q);
         foreach ($expr as $k => $v) {
             $q["email_$k"] = '1';
-            if (substr($k, -4) != 'null') {
+            if ('order_by' != $k && substr($k, -4) != 'null') {
                 $count++;
             }
-            $this->assertNotFalse(method_exists($qb->expr(), $v));
+            if ('order_by' != $k) {
+                $this->assertNotFalse(method_exists($qb->expr(), $v));
+            }
         }
         $qb = User::ransack($q);
         $this->assertEquals($count, $qb->getParameters()->count());
