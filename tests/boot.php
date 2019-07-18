@@ -9,14 +9,10 @@ foreach (glob(__DIR__ . '/models/*.php') as $file) {
 include_once __DIR__ . '/EM.php';
 
 $params     = [
-    'driver'        => 'pdo_mysql',
-    'host'          => '127.0.0.1',
-    'dbname'        => 'foo',
-    'user'          => 'root',
-    'password'      => '',
-    'service'       => true,
-    'charset'       => 'UTF8',
-    'driverOptions' => ['charset' => 'UTF8'],
+    'driver'  => 'pdo_sqlite',
+    'path'    => 'tmp/test.db',
+    'memory'  => true,
+    'charset' => 'UTF8',
 ];
 $config     = new Configuration();
 $driverImpl = $config->newDefaultAnnotationDriver(__DIR__ . '/models');

@@ -98,10 +98,10 @@ class RansackTest extends \PHPUnit\Framework\TestCase
         $qb    = User::ransack($q);
         foreach ($expr as $k => $v) {
             $q["email_$k"] = '1';
-            if ('order_by' != $k && substr($k, -4) != 'null') {
+            if (!in_array($k, ['order_by', 'group_by']) && substr($k, -4) != 'null') {
                 $count++;
             }
-            if ('order_by' != $k) {
+            if (!in_array($k, ['order_by', 'group_by'])) {
                 $this->assertNotFalse(method_exists($qb->expr(), $v));
             }
         }
@@ -167,11 +167,9 @@ class RansackTest extends \PHPUnit\Framework\TestCase
         $p = $r->getProperty('model');
         $p->setAccessible(true);
         $p->setValue($rs, 'User');
-
         $qb = $r->getProperty('qb');
         $qb->setAccessible(true);
         $qb->setValue($rs, \Paliari\Doctrine\RansackQueryBuilder::create(EM::getEm(), 'User'));
-
         $this->assertEquals([['person', 'address'], 'street', 'string'], $m->invokeArgs($rs, ['person_address_street']));
     }
 
