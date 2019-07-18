@@ -1,6 +1,6 @@
 {
     "name": "paliari/doctrine-ransack",
-    "version": "1.1.4",
+    "version": "1.1.5",
     "description": "Advanced query searching for Doctrine ORM (based on Ruby on Rails Ransack)",
     "type": "library",
     "require": {
