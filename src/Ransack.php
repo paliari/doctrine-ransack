@@ -1,4 +1,5 @@
 <?php
+
 namespace Paliari\Doctrine;
 
 use Doctrine\ORM\EntityManager,
@@ -30,6 +31,7 @@ class Ransack
         'start'    => 'like',
         'end'      => 'like',
         'order_by' => 'addOrderBy',
+        'group_by' => 'addGroupBy',
     ];
 
     /**
@@ -196,7 +198,9 @@ class Ransack
      */
     protected function andWhere($expr)
     {
-        $this->qb->andWhere($expr);
+        if ($expr) {
+            $this->qb->andWhere($expr);
+        }
     }
 
     /**
@@ -215,6 +219,8 @@ class Ransack
             return $this->qb->expr()->$method("$alias.$field");
         } elseif ('order_by' == $expr) {
             $this->qb->addOrderBy("$alias.$field", $value);
+        } elseif ('group_by' == $expr) {
+            $this->qb->addGroupBy("$alias.$field");
         } else {
             $key = "{$alias}_{$field}_$expr";
             if (in_array($method, ['in', 'notIn'])) {
@@ -231,6 +237,8 @@ class Ransack
 
             return $this->qb->expr()->$method("$alias.$field", ":$key");
         }
+
+        return null;
     }
 
     /**
