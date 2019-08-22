@@ -4,6 +4,37 @@ namespace Paliari\Doctrine;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\QueryBuilder;
 
+/**
+ * Class RansackQueryBuilder
+ *
+ * @method RansackQueryBuilder select(mixed $select = null)
+ * @method RansackQueryBuilder addSelect(mixed $select = null)
+ * @method RansackQueryBuilder where(mixed $predicates)
+ * @method RansackQueryBuilder from(string $from, string $alias, string $indexBy = null)
+ * @method RansackQueryBuilder join(string $join, string $alias, string $conditionType = null, string $condition = null, string $indexBy = null)
+ * @method RansackQueryBuilder innerJoin(string $join, string $alias, string $conditionType = null, string $condition = null, string $indexBy = null)
+ * @method RansackQueryBuilder leftJoin(string $join, string $alias, string $conditionType = null, string $condition = null, string $indexBy = null)
+ * @method RansackQueryBuilder andWhere(mixed $where)
+ * @method RansackQueryBuilder orWhere(mixed $where)
+ * @method RansackQueryBuilder groupBy(mixed $groupBy)
+ * @method RansackQueryBuilder addGroupBy(mixed $groupBy)
+ * @method RansackQueryBuilder having(mixed $having)
+ * @method RansackQueryBuilder andHaving(mixed $having)
+ * @method RansackQueryBuilder orHaving(mixed $having)
+ * @method RansackQueryBuilder orderBy(string $sort, string $order = null)
+ * @method RansackQueryBuilder addOrderBy(string $sort, string $order = null)
+ * @method RansackQueryBuilder setParameter(string $key, mixed $value, string $type = null)
+ * @method RansackQueryBuilder setParameters(mixed $parameters)
+ * @method RansackQueryBuilder setFirstResult(integer $firstResult)
+ * @method RansackQueryBuilder setMaxResults(integer $maxResults)
+ * @method RansackQueryBuilder distinct(bool $flag)
+ * @method RansackQueryBuilder delete(string $delete = null, string $alias = null)
+ * @method RansackQueryBuilder update(string $update = null, string $alias = null)
+ * @method RansackQueryBuilder set(string $key, string $value)
+ * @method RansackQueryBuilder add(string $dqlPartName, string $dqlPart, bool $append = false)
+ *
+ * @package Paliari\Doctrine
+ */
 class RansackQueryBuilder extends QueryBuilder
 {
 
