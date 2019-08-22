@@ -1,4 +1,5 @@
 <?php
+
 namespace Paliari\Doctrine;
 
 use Doctrine\ORM\EntityManager;
@@ -77,28 +78,31 @@ class RansackQueryBuilder extends QueryBuilder
     /**
      * Adiciona os selects com os partials e os respectivos joins, usado pra arrayResult.
      *
-     * @param array $options
+     * @param array  $includes
      *
-     * @return $this
-     */
-    public function includes($options = [], $alias = 't')
-    {
-        $this->resetDQLPart('select');
-
-        return $this->includeSelect($options, $alias);
-    }
-
-    /**
-     * @param array  $options
      * @param string $alias
      *
      * @return $this
      */
-    protected function includeSelect($options, $alias)
+    public function includes($includes = [], $alias = 't')
     {
-        $this->addSelect($this->prepareIncludeSelect($alias, @$options['only']));
-        if (isset($options['include'])) {
-            foreach ($options['include'] as $k => $v) {
+        $this->resetDQLPart('select');
+
+        return $this->includeSelect($includes, $alias);
+    }
+
+    /**
+     * @param array  $includes
+     * @param string $alias
+     *
+     * @return $this
+     */
+    protected function includeSelect($includes, $alias)
+    {
+        $only = isset($includes['only']) ? $includes['only'] : null;
+        $this->addSelect($this->prepareIncludeSelect($alias, $only));
+        if (isset($includes['include'])) {
+            foreach ($includes['include'] as $k => $v) {
                 $is_array = is_array($v);
                 $fk       = $is_array ? $k : $v;
                 $this->tryLeftJoin($alias, $fk);
@@ -138,6 +142,56 @@ class RansackQueryBuilder extends QueryBuilder
     protected function prepareAliasFK($parentAlias, $fk)
     {
         return "{$parentAlias}_$fk";
+    }
+
+    /**
+     * @param array $includes
+     *
+     * @return array
+     */
+    public function asJson($includes = [])
+    {
+        if ($includes) {
+            $this->includes($includes);
+        }
+
+        return $this->getQuery()->getArrayResult();
+    }
+
+    /**
+     * Alias $this->getQuery()->getArrayResult()
+     *
+     * @param array $includes
+     *
+     * @return array
+     */
+    public function getArrayResult($includes = [])
+    {
+        if ($includes) {
+            $this->includes($includes);
+        }
+
+        return $this->getQuery()->getArrayResult();
+    }
+
+    /**
+     * Alias to $this->getQuery()->getResult()
+     *
+     * @return array
+     */
+    public function getResult()
+    {
+        return $this->getQuery()->getResult();
+    }
+
+    /**
+     * @return object|null
+     */
+    public function first()
+    {
+        $rows = $this->setMaxResults(1)->getResult();
+
+        return isset($rows[0]) ? $rows[0] : null;
     }
 
 }
