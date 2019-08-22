@@ -4,7 +4,8 @@
     "description": "Advanced query searching for Doctrine ORM (based on Ruby on Rails Ransack)",
     "type": "library",
     "require": {
-        "doctrine/orm": "^2.5"
+        "php": ">=7.3",
+        "doctrine/orm": "^2.6"
     },
     "license": "MIT",
     "authors": [
@@ -14,9 +15,12 @@
         }
     ],
     "homepage": "https://github.com/paliari/doctrine-validator",
-    "repository": {
-        "url": "https://github.com/paliari/doctrine-ransack.git"
-    },
+    "repositories": [
+        {
+            "type": "git",
+            "url": "https://github.com/paliari/doctrine-ransack.git"
+        }
+    ],
     "autoload": {
         "psr-4": {
             "Paliari\\Doctrine\\": "src"
