@@ -3,6 +3,7 @@ namespace Paliari\Doctrine;
 
 /**
  * Class TraitRansackModel
+ * @deprecated Use AbstractRansackRepository
  * @package Paliari\Doctrine
  */
 trait TraitRansackModel
