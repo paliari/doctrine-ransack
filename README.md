@@ -5,16 +5,20 @@
 
 #### Configuration
 
-Your models class extends to AbstractRansackModel, example
+Your repository class extends to AbstractRansackRepository, example
 
 ```php
 <?php
 
-// Create your model extended to AbstractRansackModel.
-class YourModel extends \Paliari\Doctrine\AbstractRansackModel
+// Create your repository extended to AbstractRansackRepository.
+class YourRepository extends \Paliari\Doctrine\AbstractRansackRepository
 {
-    //... fields ...
-     
+
+    protected static function modelName(): string
+    {
+        return 'MyModel';
+    }
+
     /**
      * Override the method getEm is required.
      * @return \Doctrine\ORM\EntityManager
@@ -22,15 +26,6 @@ class YourModel extends \Paliari\Doctrine\AbstractRansackModel
     public static function getEm()
     {
         // return EntityManager
-    }
-
-    /**
-     * Override this method if you need a custom query builder.
-     * @return RansackQueryBuilder
-     */
-    public static function query()
-    {
-        // return you custom Query Builder.
     }
 
 }
@@ -46,7 +41,7 @@ $params = [
     'email_not_null' => null,
     'person_name_eq' => 'abc',
 ];
-$qb = User::ransack($params);
+$qb = YourRepository::ransack($params);
 $rows = $qb->getQuery()->getArrayResult();
 
 // Using includes
@@ -58,7 +53,7 @@ $includes = [
         ]
     ]
 ];
-$rows = $qb->includes($includes)->getQuery()->getArrayResult();
+$rows = $qb->includes($includes)->getArrayResult();
 
 
 ```
