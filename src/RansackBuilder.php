@@ -2,6 +2,8 @@
 
 namespace Paliari\Doctrine;
 
+use Doctrine\ORM\Query;
+use Doctrine\ORM\QueryBuilder;
 use JetBrains\PhpStorm\Pure;
 use Paliari\Doctrine\Exceptions\RansackException;
 use Paliari\Doctrine\VO\WhereParamsVO;
@@ -48,5 +50,16 @@ class RansackBuilder
     public function getQbManager(): QueryBuilderManger
     {
         return $this->qbManager;
+    }
+
+    #[Pure]
+    public function getQueryBuilder(): QueryBuilder
+    {
+        return $this->qbManager->getQueryBuilder();
+    }
+
+    public function getQuery(): Query
+    {
+        return $this->getQueryBuilder()->getQuery();
     }
 }

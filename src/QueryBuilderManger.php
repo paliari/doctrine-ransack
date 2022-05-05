@@ -8,8 +8,13 @@ class QueryBuilderManger
 {
     protected array $joins = [];
 
-    public function __construct(public QueryBuilder $qb, protected string $alias = 't')
+    public function __construct(protected QueryBuilder $qb, protected string $alias = 't')
     {
+    }
+
+    public function getQueryBuilder(): QueryBuilder
+    {
+        return $this->qb;
     }
 
     public function tryLeftJoin($join, $alias, $conditionType = null, $condition = null, $indexBy = null): QueryBuilder

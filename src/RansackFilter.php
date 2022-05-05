@@ -24,7 +24,7 @@ class RansackFilter
     public function apply(WhereParamsVO $paramsVO): QueryBuilderManger
     {
         $modelName = $this->modelName;
-        $qb = $this->qbManager->qb;
+        $qb = $this->qbManager->getQueryBuilder();
         foreach ($paramsVO->where as $k => $v) {
             if (!$this->isBlank($v) || preg_match('/_null$/', $k)) {
                 $paramFilterVO = $this->config->getParamFilterParser()->parse($k, $v);
@@ -76,7 +76,7 @@ class RansackFilter
      */
     protected function filtersFks(string $modelName, ParamFilterVO $vo)
     {
-        $qb = $this->qbManager->qb;
+        $qb = $this->qbManager->getQueryBuilder();
         $alias = $this->alias;
         $filterFk = $this->config->getFilterFkManager()->extract($qb, $modelName, $alias, $vo);
         foreach ($filterFk->fks as $fk) {
@@ -106,12 +106,15 @@ class RansackFilter
         $filterVO->value = $paramVO->value;
         $expr = $this->config->getExprFactory()->get($paramVO->exprName);
 
-        return $expr->create($this->qbManager->qb, $filterVO);
+        return $expr->create($this->qbManager->getQueryBuilder(), $filterVO);
     }
 
     protected function getField(string $modelName, string $field): ?string
     {
-        $classMetadata = $this->qbManager->qb->getEntityManager()->getClassMetadata($modelName);
+        $classMetadata = $this->qbManager
+            ->getQueryBuilder()
+            ->getEntityManager()
+            ->getClassMetadata($modelName);
         if ($classMetadata->hasField($field)) {
             return $classMetadata->getFieldName($field);
         }
@@ -121,7 +124,11 @@ class RansackFilter
 
     protected function getTypeOfField(string $modelName, string $field): ?string
     {
-        return $this->qbManager->qb->getEntityManager()->getClassMetadata($modelName)->getTypeOfField($field);
+        return $this->qbManager
+            ->getQueryBuilder()
+            ->getEntityManager()
+            ->getClassMetadata($modelName)
+            ->getTypeOfField($field);
     }
 
     protected function isBlank($value): bool
