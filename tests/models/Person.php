@@ -4,9 +4,8 @@
  * @Entity
  * @Table(name="people")
  */
-class Person extends AbstractModel
+class Person
 {
-
     /**
      * Primary Key column.
      *
@@ -20,6 +19,16 @@ class Person extends AbstractModel
      * @Column(type="string", length=250)
      */
     public $name = '';
+
+    /**
+     * @Column(type="string", length=250)
+     */
+    public $document = '';
+
+    /**
+     * @Column(type="integer", nullable=true)
+     */
+    public $address_id;
 
     /**
      * @ManyToOne(targetEntity="Address")
@@ -42,5 +51,4 @@ class Person extends AbstractModel
     {
         $this->address = $address;
     }
-
 }
