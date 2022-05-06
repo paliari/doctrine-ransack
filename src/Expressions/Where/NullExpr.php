@@ -11,6 +11,6 @@ class NullExpr extends AbstractExpr
 
     public function create(QueryBuilder $qb, FilterVO $vo): string
     {
-        return $qb->expr()->isNotNull($vo->field);
+        return $qb->expr()->isNull($vo->field);
     }
 }

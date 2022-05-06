@@ -9,8 +9,10 @@ class OrderByExpr extends AbstractExpr
 {
     public const NAME = 'order_by';
 
-    public function create(QueryBuilder $qb, FilterVO $vo): QueryBuilder
+    public function create(QueryBuilder $qb, FilterVO $vo): mixed
     {
-        return $qb->addOrderBy($vo->field, $vo->value);
+        $qb->addOrderBy($vo->field, $vo->value);
+
+        return null;
     }
 }

@@ -9,8 +9,10 @@ class GroupByExpr extends AbstractExpr
 {
     public const NAME = 'group_by';
 
-    public function create(QueryBuilder $qb, FilterVO $vo): QueryBuilder
+    public function create(QueryBuilder $qb, FilterVO $vo): mixed
     {
-        return $qb->addGroupBy($vo->field);
+        $qb->addGroupBy($vo->field);
+
+        return null;
     }
 }

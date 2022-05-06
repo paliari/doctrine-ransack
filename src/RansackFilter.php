@@ -37,22 +37,12 @@ class RansackFilter
                         $args[] = $this->filter($modelName, $vo);
                     }
                     $qb->andWhere(call_user_func_array([$qb->expr(), 'orX'], $args));
-                } else {
-                    $qb->andWhere($this->filter($modelName, $paramFilterVO));
+                } elseif ($expr = $this->filter($modelName, $paramFilterVO)) {
+                    $qb->andWhere($expr);
                 }
             }
         }
 
-        return $this->qbManager;
-    }
-
-    public function getConfig(): RansackConfig
-    {
-        return $this->config;
-    }
-
-    public function getQbManager(): QueryBuilderManger
-    {
         return $this->qbManager;
     }
 

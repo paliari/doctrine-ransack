@@ -2,6 +2,7 @@
 
 namespace Paliari\Doctrine;
 
+use JetBrains\PhpStorm\Pure;
 use Paliari\Doctrine\Expressions\FilterFkManager;
 use Paliari\Doctrine\Expressions\ParamFilterParser;
 use Paliari\Doctrine\Expressions\Where\ExprFactory;
@@ -12,12 +13,12 @@ class RansackConfig
     protected ParamFilterParser $paramFilterParser;
     protected FilterFkManager $filterFkManager;
 
-    public function __construct(?CustomAssociationInterface $customAssociation = null)
+    #[Pure]
+    public function __construct()
     {
         $this->exprFactory = new ExprFactory();
         $this->paramFilterParser = new ParamFilterParser();
         $this->filterFkManager = new FilterFkManager();
-        $this->setCustomAssociation($customAssociation);
     }
 
     public function setCustomAssociation(?CustomAssociationInterface $customAssociation): static

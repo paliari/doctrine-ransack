@@ -1,23 +1,21 @@
 <?php
 
-namespace Tests;
+namespace Tests\TestCases\Unit;
 
 use Paliari\Doctrine\Ransack;
 use Paliari\Doctrine\RansackConfig;
 use Paliari\Doctrine\VO\WhereParamsVO;
 use PHPUnit\Framework\TestCase;
+use Tests\EM;
+use User;
 
-/**
- * Class RansackTest
- */
 class RansackTest extends TestCase
 {
     public function testDql()
     {
-        $modelName = \User::class;
+        $modelName = User::class;
         $alias = 't';
-        $config = new RansackConfig();
-        $ransack = new Ransack($config);
+        $ransack = new Ransack(new RansackConfig());
         $qb = EM::getEm()->createQueryBuilder()->from($modelName, $alias);
         $paramsVO = new WhereParamsVO();
         $paramsVO->where = [
