@@ -9,10 +9,15 @@
          beStrictAboutTestsThatDoNotTestAnything="true"
          beStrictAboutTodoAnnotatedTests="true"
          verbose="true">
-    <testsuite>
+    <testsuite name="all">
         <directory suffix="Test.php">tests</directory>
     </testsuite>
-
+    <testsuite name="Unit">
+        <directory suffix="Test.php">tests/TestCases/Unit</directory>
+    </testsuite>
+    <testsuite name="Functional">
+        <directory suffix="Test.php">tests/TestCases/Functional</directory>
+    </testsuite>
     <filter>
         <whitelist processUncoveredFilesFromWhitelist="true">
             <directory suffix=".php">src</directory>

@@ -4,9 +4,8 @@
  * @Entity
  * @Table(name="addresses")
  */
-class Address extends AbstractModel
+class Address
 {
-
     /**
      * Primary Key column.
      *
@@ -21,4 +20,18 @@ class Address extends AbstractModel
      */
     public $street = '';
 
+    /**
+     * @Column(type="string", length=255)
+     */
+    public $neighborhood = '';
+
+    /**
+     * @Column(type="string", length=255)
+     */
+    public $city = '';
+
+    /**
+     * @Column(type="string", length=255)
+     */
+    public $number = '';
 }

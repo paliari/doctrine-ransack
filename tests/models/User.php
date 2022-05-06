@@ -4,9 +4,8 @@
  * @Entity
  * @Table(name="users")
  */
-class User extends \AbstractModel
+class User
 {
-
     /**
      * Primary Key column.
      *
@@ -17,7 +16,7 @@ class User extends \AbstractModel
     public $id;
 
     /**
-     * @Column(type="string", length=40, unique=true)
+     * @Column(type="string", length=255, unique=true)
      */
     public $email = '';
 
@@ -52,5 +51,4 @@ class User extends \AbstractModel
     {
         $this->person = $person;
     }
-
 }
