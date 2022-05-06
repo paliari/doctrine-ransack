@@ -23,6 +23,11 @@ class Address
     /**
      * @Column(type="string", length=255)
      */
+    public $neighborhood = '';
+
+    /**
+     * @Column(type="string", length=255)
+     */
     public $city = '';
 
     /**
