@@ -6,6 +6,7 @@ use Doctrine\ORM\Query;
 use Doctrine\ORM\QueryBuilder;
 use JetBrains\PhpStorm\Pure;
 use Paliari\Doctrine\Exceptions\RansackException;
+use Paliari\Doctrine\Factories\RansackFilterFactory;
 use Paliari\Doctrine\VO\WhereParamsVO;
 
 class RansackBuilder

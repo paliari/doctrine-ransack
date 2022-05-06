@@ -5,7 +5,7 @@ namespace Paliari\Doctrine;
 use JetBrains\PhpStorm\Pure;
 use Paliari\Doctrine\Expressions\FilterFkManager;
 use Paliari\Doctrine\Expressions\ParamFilterParser;
-use Paliari\Doctrine\Expressions\Where\ExprFactory;
+use Paliari\Doctrine\Factories\ExprFactory;
 
 class RansackConfig
 {

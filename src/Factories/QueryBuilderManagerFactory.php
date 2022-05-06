@@ -1,9 +1,10 @@
 <?php
 
-namespace Paliari\Doctrine;
+namespace Paliari\Doctrine\Factories;
 
 use Doctrine\ORM\QueryBuilder;
 use JetBrains\PhpStorm\Pure;
+use Paliari\Doctrine\QueryBuilderManger;
 
 class QueryBuilderManagerFactory
 {

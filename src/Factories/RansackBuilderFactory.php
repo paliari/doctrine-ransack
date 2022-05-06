@@ -1,6 +1,10 @@
 <?php
 
-namespace Paliari\Doctrine;
+namespace Paliari\Doctrine\Factories;
+
+use Paliari\Doctrine\QueryBuilderManger;
+use Paliari\Doctrine\RansackBuilder;
+use Paliari\Doctrine\RansackConfig;
 
 class RansackBuilderFactory
 {

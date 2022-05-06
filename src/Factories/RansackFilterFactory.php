@@ -1,8 +1,11 @@
 <?php
 
-namespace Paliari\Doctrine;
+namespace Paliari\Doctrine\Factories;
 
 use JetBrains\PhpStorm\Pure;
+use Paliari\Doctrine\QueryBuilderManger;
+use Paliari\Doctrine\RansackConfig;
+use Paliari\Doctrine\RansackFilter;
 
 class RansackFilterFactory
 {

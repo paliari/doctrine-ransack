@@ -3,7 +3,7 @@
 namespace Paliari\Doctrine\Expressions;
 
 use Paliari\Doctrine\Exceptions\RansackException;
-use Paliari\Doctrine\Expressions\Where\ExprFactory;
+use Paliari\Doctrine\Factories\ExprFactory;
 use Paliari\Doctrine\VO\ParamFilterVO;
 
 class ParamFilterParser

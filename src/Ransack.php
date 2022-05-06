@@ -4,6 +4,8 @@ namespace Paliari\Doctrine;
 
 use Doctrine\ORM\QueryBuilder;
 use JetBrains\PhpStorm\Pure;
+use Paliari\Doctrine\Factories\QueryBuilderManagerFactory;
+use Paliari\Doctrine\Factories\RansackBuilderFactory;
 
 /**
  * Class Ransack
