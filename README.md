@@ -5,30 +5,14 @@
 
 #### Configuration
 
-Your repository class extends to AbstractRansackRepository, example
+Your setup, example
 
 ```php
 <?php
+use Paliari\Doctrine\Ransack;
+use Paliari\Doctrine\RansackConfig;
 
-// Create your repository extended to AbstractRansackRepository.
-class YourRepository extends \Paliari\Doctrine\AbstractRansackRepository
-{
-
-    protected static function modelName(): string
-    {
-        return 'MyModel';
-    }
-
-    /**
-     * Override the method getEm is required.
-     * @return \Doctrine\ORM\EntityManager
-     */
-    public static function getEm()
-    {
-        // return EntityManager
-    }
-
-}
+$ransack = new Ransack(new RansackConfig());
 
 ```
 ### Usage
@@ -39,21 +23,31 @@ class YourRepository extends \Paliari\Doctrine\AbstractRansackRepository
 $params = [
     'id_lteq'        => 20,
     'email_not_null' => null,
-    'person_name_eq' => 'abc',
+    'person.name_eq' => 'abc',
 ];
-$qb = YourRepository::ransack($params);
-$rows = $qb->getQuery()->getArrayResult();
+$modelName = User::class;
+$alias = 't';
+$paramsVO = new WhereParamsVO();
+$paramsVO->where = [
+    'person.address.street_cont' => 'Av Brasil',
+    'person.address.city_eq' => 'Maringá',
+    'id_order_by' => 'asc',
+];
+$qb = $entityManager->createQueryBuilder()->from($modelName, $alias);
+$rb = $this->ransack
+    ->query($qb, $modelName, $alias)
+    ->includes()
+    ->where($paramsVO);
+$users = $rb->getQuery()->getResult();
 
 // Using includes
 $includes = [
-    'only' => ['id', 'email'],
-    'include' => [
-        'person' => [
-            'only' => ['id', 'name']
-        ]
-    ]
+  'only' => ['id', 'email'],
+  'include' => [
+    'person' ['only' => ['id', 'name']],
+  ],
 ];
-$rows = $qb->includes($includes)->getArrayResult();
+$rows = $rb->includes($includes)->getArrayResult();
 
 
 ```
@@ -189,7 +183,7 @@ $rows = $qb->includes($includes)->getArrayResult();
       ```sql 
       WHERE table.field >= 25
       ```
-    
+
   - #### matches (matches)
     - Example: 
   
@@ -203,6 +197,19 @@ $rows = $qb->includes($includes)->getArrayResult();
       WHERE table.field LIKE 'Fulano'
       ```
     
+  - #### not_matches (not matches)
+    - Example: 
+  
+      ```json
+      {"field_not_matches": "Fulano"}
+      ```
+  
+    - SQL result: 
+  
+      ```sql 
+      WHERE table.field NOT LIKE 'Fulano'
+      ```
+
   - #### cont (cont)
     - Example: 
   
@@ -214,6 +221,19 @@ $rows = $qb->includes($includes)->getArrayResult();
   
       ```sql 
       WHERE table.field LIKE '%Fulano%'
+      ```
+
+  - #### not_cont (not cont)
+    - Example: 
+  
+      ```json
+      {"field_not_cont": "Fulano Silva"}
+      ```
+  
+    - SQL result: 
+  
+      ```sql 
+      WHERE table.field NOT LIKE '%Fulano%Silva%'
       ```
 
   - #### start (start)
@@ -229,6 +249,19 @@ $rows = $qb->includes($includes)->getArrayResult();
       WHERE table.field LIKE 'Fulano%'
       ```
 
+  - #### not_start (not start)
+    - Example: 
+  
+      ```json
+      {"field_not_start": "Fulano"}
+      ```
+  
+    - SQL result: 
+  
+      ```sql 
+      WHERE table.field NOT LIKE 'Fulano%'
+      ```
+
   - #### end (end)
     - Example: 
   
@@ -240,6 +273,32 @@ $rows = $qb->includes($includes)->getArrayResult();
   
       ```sql 
       WHERE table.field LIKE '%Fulano'
+      ```
+
+  - #### not_end (not end)
+    - Example: 
+  
+      ```json
+      {"field_not_end": "Fulano"}
+      ```
+  
+    - SQL result: 
+  
+      ```sql 
+      WHERE table.field NOT LIKE '%Fulano'
+      ```
+
+  - #### between (between)
+    - Example: 
+  
+      ```json
+      {"field_between": [10, 20]}
+      ```
+  
+    - SQL result: 
+  
+      ```sql 
+      WHERE table.field BETWEEN 10 AND 20
       ```
 
   - #### order_by (order by)
