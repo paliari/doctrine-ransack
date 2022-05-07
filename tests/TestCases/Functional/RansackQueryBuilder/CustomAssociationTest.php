@@ -2,37 +2,17 @@
 
 namespace Tests\TestCases\Functional\RansackQueryBuilder;
 
-use Faker\Factory;
-use Faker\Generator;
-use Paliari\Doctrine\Ransack;
-use Paliari\Doctrine\RansackConfig;
 use Paliari\Doctrine\VO\WhereParamsVO;
-use PHPUnit\Framework\TestCase;
 use Tests\CustomAssociation;
 use Tests\EM;
-use Tests\Factories\PersonFactory;
-use Tests\Factories\UserFactory;
+use Tests\TestCases\Functional\BaseTestFunctional;
 use User;
 
-class CustomAssociationTest extends TestCase
+class CustomAssociationTest extends BaseTestFunctional
 {
-    protected PersonFactory $personFactory;
-    protected UserFactory $userFactory;
-    protected Ransack $ransack;
-    protected Generator $faker;
-
-    protected function setUp(): void
-    {
-        parent::setUp();
-        $this->personFactory = new PersonFactory();
-        $this->userFactory = new UserFactory();
-        $this->ransack = new Ransack(new RansackConfig());
-        $this->ransack->getConfig()->setCustomAssociation(new CustomAssociation());
-        $this->faker = Factory::create('pt_BR');
-    }
-
     public function testFilter()
     {
+        $this->ransack->getConfig()->setCustomAssociation(new CustomAssociation());
         $modelName = User::class;
         $alias = 't';
         $person1 = $this->personFactory->create([]);
@@ -44,7 +24,7 @@ class CustomAssociationTest extends TestCase
             'custom_email_eq' => $person1->email,
             'id_order_by' => 'asc',
         ];
-        $qb = EM::getEm()->createQueryBuilder()->from($modelName, $alias);
+        $qb = $this->em->createQueryBuilder()->from($modelName, $alias);
         $this->assertNotEquals($user2->email, $user2->getPerson()->email);
         $res = $this->ransack->query($qb, $modelName, $alias)
             ->where($paramsVO)

@@ -10,7 +10,7 @@ class AddressFactory extends AbstractFactory
     {
         $params = $params + [
                 'street' => $this->faker->streetName,
-                'neighborhood' => $this->faker->streetAddress,
+                'neighborhood' => $this->faker->citySuffix,
                 'city' => $this->faker->city,
                 'number' => $this->faker->numerify(),
             ];

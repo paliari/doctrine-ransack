@@ -37,7 +37,7 @@ class User
     private $person;
 
     /**
-     * @return mixed
+     * @return Person
      */
     public function getPerson()
     {
@@ -45,7 +45,7 @@ class User
     }
 
     /**
-     * @param mixed $person
+     * @param Person $person
      */
     public function setPerson($person)
     {

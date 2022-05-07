@@ -2,32 +2,13 @@
 
 namespace Tests\TestCases\Functional\RansackQueryBuilder;
 
-use Paliari\Doctrine\Ransack;
-use Paliari\Doctrine\RansackConfig;
 use Paliari\Doctrine\VO\WhereParamsVO;
-use PHPUnit\Framework\TestCase;
 use Tests\EM;
-use Tests\Factories\AddressFactory;
-use Tests\Factories\PersonFactory;
-use Tests\Factories\UserFactory;
+use Tests\TestCases\Functional\BaseTestFunctional;
 use User;
 
-class FiltersTest extends TestCase
+class FiltersTest extends BaseTestFunctional
 {
-    protected AddressFactory $addressFactory;
-    protected PersonFactory $personFactory;
-    protected UserFactory $userFactory;
-    protected Ransack $ransack;
-
-    protected function setUp(): void
-    {
-        parent::setUp();
-        $this->addressFactory = new AddressFactory();
-        $this->personFactory = new PersonFactory();
-        $this->userFactory = new UserFactory();
-        $this->ransack = new Ransack(new RansackConfig());
-    }
-
     public function testFilter()
     {
         $modelName = User::class;
@@ -46,7 +27,7 @@ class FiltersTest extends TestCase
             'person_address_city_eq' => $address2->city,
             'id_order_by' => 'asc',
         ];
-        $qb = EM::getEm()->createQueryBuilder()->from($modelName, $alias);
+        $qb = $this->em->createQueryBuilder()->from($modelName, $alias);
         $res = $this->ransack->query($qb, $modelName, $alias)
             ->where($paramsVO)
             ->includes()
@@ -60,7 +41,7 @@ class FiltersTest extends TestCase
             'person_address_city_not_eq' => $address2->city,
             'id_order_by' => 'asc',
         ];
-        $qb = EM::getEm()->createQueryBuilder()->from($modelName, $alias);
+        $qb = $this->em->createQueryBuilder()->from($modelName, $alias);
         $res = $this->ransack->query($qb, $modelName, $alias)
             ->where($paramsVO)
             ->includes()
