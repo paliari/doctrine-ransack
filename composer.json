@@ -1,40 +1,40 @@
 {
-  "authors": [
-    {
-      "name": "Marcos Paliari",
-      "email": "marcos@paliari.com.br"
-    }
-  ],
-  "autoload": {
-    "psr-4": {
-      "Paliari\\Doctrine\\": "src"
-    }
-  },
-  "autoload-dev": {
-    "psr-4": {
-      "Tests\\": "tests",
-      "": "tests/models"
-    }
-  },
-  "description": "Advanced query searching for Doctrine ORM (based on Ruby on Rails Ransack)",
-  "homepage": "https://github.com/paliari/doctrine-ransack",
-  "license": "MIT",
-  "name": "paliari/doctrine-ransack",
-  "repositories": [
-    {
-      "type": "git",
-      "url": "https://github.com/paliari/doctrine-ransack.git"
-    }
-  ],
-  "require": {
-    "php": ">=8.0",
-    "doctrine/orm": "^2.8"
-  },
-  "require-dev": {
-    "phpunit/phpunit": "^9.5",
-    "paliari/php-utils": "^2.0",
-    "fzaninotto/faker": "^1.5"
-  },
-  "type": "library",
-  "version": "1.2.0"
+    "authors": [
+        {
+            "name": "Marcos Paliari",
+            "email": "marcos@paliari.com.br"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "Paliari\\Doctrine\\": "src"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Tests\\": "tests",
+            "": "tests/models"
+        }
+    },
+    "description": "Advanced query searching for Doctrine ORM (based on Ruby on Rails Ransack)",
+    "homepage": "https://github.com/paliari/doctrine-ransack",
+    "license": "MIT",
+    "name": "paliari/doctrine-ransack",
+    "repositories": [
+        {
+            "type": "git",
+            "url": "https://github.com/paliari/doctrine-ransack.git"
+        }
+    ],
+    "require": {
+        "php": ">=8.0",
+        "doctrine/orm": "^2.8"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^9.5",
+        "paliari/php-utils": "^2.0",
+        "fzaninotto/faker": "^1.5"
+    },
+    "type": "library",
+    "version": "2.0.0"
 }
