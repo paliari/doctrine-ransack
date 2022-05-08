@@ -23,27 +23,54 @@ class RansackFilter
      */
     public function apply(WhereParamsVO $paramsVO): QueryBuilderManger
     {
-        $modelName = $this->modelName;
+        foreach ($this->where($paramsVO->where) as $filter) {
+            $this->qbManager->getQueryBuilder()->andWhere($filter);
+        }
+
+        return $this->qbManager;
+    }
+
+    /**
+     * @throws RansackException
+     */
+    protected function where(array $where): array
+    {
         $qb = $this->qbManager->getQueryBuilder();
-        foreach ($paramsVO->where as $k => $v) {
+        $filters = [];
+        foreach ($where as $k => $v) {
             if (!$this->isBlank($v) || preg_match('/_null$/', $k)) {
-                $paramFilterVO = $this->config->getParamFilterParser()->parse($k, $v);
-                $keys = explode('_or_', $paramFilterVO->key);
-                if (count($keys) > 1) {
-                    $args = [];
-                    foreach ($keys as $key) {
-                        $vo = new ParamFilterVO($paramFilterVO->toArray());
-                        $vo->key = $key;
-                        $args[] = $this->filter($modelName, $vo);
-                    }
-                    $qb->andWhere(call_user_func_array([$qb->expr(), 'orX'], $args));
-                } elseif ($expr = $this->filter($modelName, $paramFilterVO)) {
-                    $qb->andWhere($expr);
+                if (in_array($k, ['or', 'and'])) {
+                    $methodName = $k . 'X'; // orX | andX
+                    $args = $this->where($v);
+                    $filters[] = call_user_func_array([$qb->expr(), $methodName], $args);
+                } elseif ($expr = $this->parseFilter($k, $v)) {
+                    $filters[] = $expr;
                 }
             }
         }
 
-        return $this->qbManager;
+        return $filters;
+    }
+
+    /**
+     * @throws RansackException
+     */
+    protected function parseFilter(string $filterKey, $filterValue)
+    {
+        $paramFilterVO = $this->config->getParamFilterParser()->parse($filterKey, $filterValue);
+        $keys = explode('_or_', $paramFilterVO->key);
+        if (count($keys) > 1) {
+            $args = [];
+            foreach ($keys as $key) {
+                $vo = new ParamFilterVO($paramFilterVO->toArray());
+                $vo->key = $key;
+                $args[] = $this->filter($this->modelName, $vo);
+            }
+
+            return call_user_func_array([$this->qbManager->getQueryBuilder()->expr(), 'orX'], $args);
+        }
+
+        return $this->filter($this->modelName, $paramFilterVO);
     }
 
     /**
