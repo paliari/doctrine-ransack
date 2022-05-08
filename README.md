@@ -19,12 +19,11 @@ $ransack = new Ransack(new RansackConfig());
 
 ```php
 <?php
+use Paliari\Doctrine\Ransack;
+use Paliari\Doctrine\RansackConfig;
+use Paliari\Doctrine\VO\WhereOrderByVO;
+use Paliari\Doctrine\VO\WhereParamsVO;
 
-$params = [
-    'id_lteq'        => 20,
-    'email_not_null' => null,
-    'person.name_eq' => 'abc',
-];
 $modelName = User::class;
 $alias = 't';
 $paramsVO = new WhereParamsVO();
@@ -32,6 +31,14 @@ $paramsVO->where = [
     'person.address.street_cont' => 'Av Brasil',
     'person.address.city_eq' => 'Maringá',
     'id_order_by' => 'asc',
+];
+$paramsVO->orderBy = [
+    new WhereOrderByVO(['field' => 'person.name', 'order' => 'ASC']),
+    new WhereOrderByVO(['field' => 'person.id', 'order' => 'DESC']),
+];
+$paramsVO->groupBy = [
+    'person.name',
+    'person.address_id',
 ];
 $qb = $entityManager->createQueryBuilder()->from($modelName, $alias);
 $rb = $this->ransack
