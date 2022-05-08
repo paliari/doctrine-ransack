@@ -3,8 +3,11 @@
 namespace Paliari\Doctrine;
 
 use Paliari\Doctrine\Exceptions\RansackException;
+use Paliari\Doctrine\Expressions\Where\GroupByExpr;
+use Paliari\Doctrine\Expressions\Where\OrderByExpr;
 use Paliari\Doctrine\VO\FilterVO;
 use Paliari\Doctrine\VO\ParamFilterVO;
+use Paliari\Doctrine\VO\WhereOrderByVO;
 use Paliari\Doctrine\VO\WhereParamsVO;
 
 class RansackFilter
@@ -26,6 +29,8 @@ class RansackFilter
         foreach ($this->where($paramsVO->where) as $filter) {
             $this->qbManager->getQueryBuilder()->andWhere($filter);
         }
+        $this->groupBy($paramsVO->groupBy);
+        $this->orderBy($paramsVO->orderBy);
 
         return $this->qbManager;
     }
@@ -50,6 +55,35 @@ class RansackFilter
         }
 
         return $filters;
+    }
+
+    /**
+     * @throws RansackException
+     */
+    protected function groupBy(array $groupBy): void
+    {
+        foreach ($groupBy as $key) {
+            $paramFilterVO = new ParamFilterVO();
+            $paramFilterVO->key = $key;
+            $paramFilterVO->exprName = GroupByExpr::NAME;
+            $this->filter($this->modelName, $paramFilterVO);
+        }
+    }
+
+    /**
+     * @param WhereOrderByVO[] $orderBy
+     *
+     * @throws RansackException
+     */
+    protected function orderBy(array $orderBy)
+    {
+        foreach ($orderBy as $vo) {
+            $paramFilterVO = new ParamFilterVO();
+            $paramFilterVO->key = $vo->field;
+            $paramFilterVO->value = $vo->order;
+            $paramFilterVO->exprName = OrderByExpr::NAME;
+            $this->filter($this->modelName, $paramFilterVO);
+        }
     }
 
     /**
