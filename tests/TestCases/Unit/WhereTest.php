@@ -282,6 +282,42 @@ class WhereTest extends TestCase
         $this->assertEquals($expectedName, $rb->getQueryBuilder()->getParameter('t_person_name_start')->getValue());
     }
 
+    public function testOr()
+    {
+        $where = [
+            'person.name_start' => $this->faker->name,
+            'or' => [
+                'email_eq' => $this->faker->email,
+                'person.document_eq' => $this->faker->cpf(),
+            ],
+        ];
+        $rb = $this->newRansackBuilder($where);
+        $expectedDql = 'SELECT t FROM User t LEFT JOIN t.person t_person WHERE t_person.name LIKE :t_person_name_start AND (t.email = :t_email_eq OR t_person.document = :t_person_document_eq)';
+        $dql = $rb->getQueryBuilder()->getDQL();
+        $this->assertEquals($expectedDql, $dql);
+        $this->assertEquals($where['person.name_start'] . '%', $rb->getQueryBuilder()->getParameter('t_person_name_start')->getValue());
+        $this->assertEquals($where['or']['email_eq'], $rb->getQueryBuilder()->getParameter('t_email_eq')->getValue());
+        $this->assertEquals($where['or']['person.document_eq'], $rb->getQueryBuilder()->getParameter('t_person_document_eq')->getValue());
+    }
+
+    public function testAnd()
+    {
+        $where = [
+            'person.name_start' => $this->faker->name,
+            'and' => [
+                'email_eq' => $this->faker->email,
+                'person.document_eq' => $this->faker->cpf(),
+            ],
+        ];
+        $rb = $this->newRansackBuilder($where);
+        $expectedDql = 'SELECT t FROM User t LEFT JOIN t.person t_person WHERE t_person.name LIKE :t_person_name_start AND (t.email = :t_email_eq AND t_person.document = :t_person_document_eq)';
+        $dql = $rb->getQueryBuilder()->getDQL();
+        $this->assertEquals($expectedDql, $dql);
+        $this->assertEquals($where['person.name_start'] . '%', $rb->getQueryBuilder()->getParameter('t_person_name_start')->getValue());
+        $this->assertEquals($where['and']['email_eq'], $rb->getQueryBuilder()->getParameter('t_email_eq')->getValue());
+        $this->assertEquals($where['and']['person.document_eq'], $rb->getQueryBuilder()->getParameter('t_person_document_eq')->getValue());
+    }
+
     protected function newRansackBuilder(array $where): RansackBuilder
     {
         $modelName = User::class;

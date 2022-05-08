@@ -3,7 +3,6 @@
 namespace Tests\TestCases\Functional\RansackQueryBuilder;
 
 use Paliari\Doctrine\VO\WhereParamsVO;
-use Tests\EM;
 use Tests\TestCases\Functional\BaseTestFunctional;
 use User;
 
