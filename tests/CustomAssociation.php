@@ -15,18 +15,18 @@ class CustomAssociation implements CustomAssociationInterface
     public function __invoke(QueryBuilder $qb, string $modelName, string $alias, string $field): ?RelationVO
     {
         if (User::class === $modelName && 'custom' == $field) {
-            $fk = new RelationVO();
-            $fk->modelName = $modelName;
-            $fk->fieldName = $field;
-            $fk->targetEntity = Person::class;
+            $relationVO = new RelationVO();
+            $relationVO->modelName = $modelName;
+            $relationVO->fieldName = $field;
+            $relationVO->targetEntity = Person::class;
             $joinVO = new JoinVO();
             $joinVO->join = Person::class;
             $joinVO->alias = "{$alias}_$field";
             $joinVO->conditionType = Join::WITH;
             $joinVO->condition = "$alias.email = $joinVO->alias.email";
-            $fk->join = $joinVO;
+            $relationVO->join = $joinVO;
 
-            return $fk;
+            return $relationVO;
         }
 
         return null;
