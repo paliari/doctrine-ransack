@@ -6,7 +6,7 @@ use Doctrine\ORM\QueryBuilder;
 use Paliari\Doctrine\CustomAssociationInterface;
 use Paliari\Doctrine\Exceptions\RansackException;
 use Paliari\Doctrine\VO\FilterFkVO;
-use Paliari\Doctrine\VO\FkVO;
+use Paliari\Doctrine\VO\RelationVO;
 use Paliari\Doctrine\VO\JoinVO;
 use Paliari\Doctrine\VO\ParamFilterVO;
 
@@ -70,10 +70,10 @@ class FilterFkManager
         foreach ($a as $i => $key) {
             $keys[] = $key;
             $fk = implode('_', $keys);
-            if ($fkVO = $this->getTargetEntity($qb, $fkModelName, $fkAlias, $fk)) {
-                $fkAlias = $fkVO->join->alias;
-                $fkModelName = $fkVO->targetEntity;
-                $filterFk->fks[] = $fkVO;
+            if ($relationVO = $this->getTargetEntity($qb, $fkModelName, $fkAlias, $fk)) {
+                $fkAlias = $relationVO->join->alias;
+                $fkModelName = $relationVO->targetEntity;
+                $filterFk->fks[] = $relationVO;
                 $field = implode('_', array_slice($a, $i + 1));
                 if ($field = $this->getField($qb, $fkModelName, $field)) {
                     $filterFk->field = $field;
@@ -87,20 +87,20 @@ class FilterFkManager
         throw new RansackException("Field '$vo->key' not found!");
     }
 
-    protected function getTargetEntity(QueryBuilder $qb, string $modelName, string $alias, string $field): ?FkVO
+    protected function getTargetEntity(QueryBuilder $qb, string $modelName, string $alias, string $field): ?RelationVO
     {
         $mapping = $qb->getEntityManager()->getClassMetadata($modelName)->getAssociationMappings();
         if ($targetEntity = $mapping[$field]['targetEntity'] ?? null) {
-            $fk = new FkVO();
-            $fk->modelName = $modelName;
-            $fk->fieldName = $field;
-            $fk->targetEntity = $targetEntity;
+            $relationVO = new RelationVO();
+            $relationVO->modelName = $modelName;
+            $relationVO->fieldName = $field;
+            $relationVO->targetEntity = $targetEntity;
             $joinVO = new JoinVO();
             $joinVO->join = "$alias.$field";
             $joinVO->alias = "{$alias}_$field";
-            $fk->join = $joinVO;
+            $relationVO->join = $joinVO;
 
-            return $fk;
+            return $relationVO;
         }
         if ($this->customAssociation) {
             return call_user_func($this->customAssociation, $qb, $modelName, $alias, $field);

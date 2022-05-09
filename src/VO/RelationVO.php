@@ -4,7 +4,7 @@ namespace Paliari\Doctrine\VO;
 
 use Paliari\Utils\VO\AbstractVO;
 
-class FkVO extends AbstractVO
+class RelationVO extends AbstractVO
 {
     public string $modelName;
     public string $fieldName;

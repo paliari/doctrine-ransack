@@ -7,7 +7,7 @@ use Paliari\Utils\VO\AbstractVO;
 class FilterFkVO extends AbstractVO
 {
     /**
-     * @var FkVO[]
+     * @var RelationVO[]
      */
     public array $fks = [];
     public ?string $field = null;

@@ -5,17 +5,17 @@ namespace Tests;
 use Doctrine\ORM\Query\Expr\Join;
 use Doctrine\ORM\QueryBuilder;
 use Paliari\Doctrine\CustomAssociationInterface;
-use Paliari\Doctrine\VO\FkVO;
+use Paliari\Doctrine\VO\RelationVO;
 use Paliari\Doctrine\VO\JoinVO;
 use Person;
 use User;
 
 class CustomAssociation implements CustomAssociationInterface
 {
-    public function __invoke(QueryBuilder $qb, string $modelName, string $alias, string $field): ?FkVO
+    public function __invoke(QueryBuilder $qb, string $modelName, string $alias, string $field): ?RelationVO
     {
         if (User::class === $modelName && 'custom' == $field) {
-            $fk = new FkVO();
+            $fk = new RelationVO();
             $fk->modelName = $modelName;
             $fk->fieldName = $field;
             $fk->targetEntity = Person::class;
