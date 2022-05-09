@@ -15,7 +15,7 @@ class InExpr extends AbstractExpr
         $key = $this->fieldKey($vo->field, static::NAME);
         $conn = $qb->getEntityManager()->getConnection();
         $values = array_map(fn($v) => $conn->convertToDatabaseValue($v, $vo->type), (array)$vo->value);
-        $qb->setParameter($key, $values, $vo->type);
+        $qb->setParameter($key, $values);
 
         return $qb->expr()->in($vo->field, ":$key");
     }
