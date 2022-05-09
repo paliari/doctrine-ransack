@@ -30,7 +30,7 @@ class IncludesTest extends BaseTestFunctional
             'only' => ['id', 'email'],
             'include' => [
                 'person' => [
-                    'only' => ['id', 'name'],
+                    'only' => ['name'],
                     'include' => ['address'],
                 ],
             ],

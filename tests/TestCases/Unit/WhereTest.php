@@ -4,6 +4,7 @@ namespace Tests\TestCases\Unit;
 
 use Faker\Factory;
 use Faker\Generator;
+use Paliari\Doctrine\Exceptions\RansackException;
 use Paliari\Doctrine\Ransack;
 use Paliari\Doctrine\RansackBuilder;
 use Paliari\Doctrine\RansackConfig;
@@ -56,6 +57,20 @@ class WhereTest extends TestCase
         $this->assertEquals($expectedName, $rb->getQueryBuilder()->getParameter('t_person_name_cont')->getValue());
     }
 
+    public function testContWithOr()
+    {
+        $where = [
+            'person_name_or_person_document_cont' => $this->faker->name,
+        ];
+        $rb = $this->newRansackBuilder($where);
+        $expectedDql = 'SELECT t FROM User t LEFT JOIN t.person t_person WHERE t_person.name LIKE :t_person_name_cont OR t_person.document LIKE :t_person_document_cont';
+        $expectedName = '%' . str_replace(' ', '%', $where['person_name_or_person_document_cont']) . '%';
+        $dql = $rb->getQueryBuilder()->getDQL();
+        $this->assertEquals($expectedDql, $dql);
+        $this->assertEquals($expectedName, $rb->getQueryBuilder()->getParameter('t_person_name_cont')->getValue());
+        $this->assertEquals($expectedName, $rb->getQueryBuilder()->getParameter('t_person_document_cont')->getValue());
+    }
+
     public function testEnd()
     {
         $where = [
@@ -93,10 +108,23 @@ class WhereTest extends TestCase
         $this->assertEquals($expectedName, $rb->getQueryBuilder()->getParameter('t_person_name_eq')->getValue());
     }
 
+    public function testGt()
+    {
+        $where = [
+            'person_id_gt' => 0,
+        ];
+        $rb = $this->newRansackBuilder($where);
+        $expectedDql = 'SELECT t FROM User t WHERE t.person_id > :t_person_id_gt';
+        $expectedName = $where['person_id_gt'];
+        $dql = $rb->getQueryBuilder()->getDQL();
+        $this->assertEquals($expectedDql, $dql);
+        $this->assertEquals($expectedName, $rb->getQueryBuilder()->getParameter('t_person_id_gt')->getValue());
+    }
+
     public function testGtEq()
     {
         $where = [
-            'person_id_gteq' => $this->faker->numberBetween(),
+            'person_id_gteq' => 0,
         ];
         $rb = $this->newRansackBuilder($where);
         $expectedDql = 'SELECT t FROM User t WHERE t.person_id >= :t_person_id_gteq';
@@ -316,6 +344,22 @@ class WhereTest extends TestCase
         $this->assertEquals($where['person.name_start'] . '%', $rb->getQueryBuilder()->getParameter('t_person_name_start')->getValue());
         $this->assertEquals($where['and']['email_eq'], $rb->getQueryBuilder()->getParameter('t_email_eq')->getValue());
         $this->assertEquals($where['and']['person.document_eq'], $rb->getQueryBuilder()->getParameter('t_person_document_eq')->getValue());
+    }
+
+    public function testThrowPoint()
+    {
+        $this->expectException(RansackException::class);
+        $this->expectExceptionMessage("Target Model 'a' not found!");
+        $where = ['a.b_eq' => 1];
+        $this->newRansackBuilder($where);
+    }
+
+    public function testThrowUnderline()
+    {
+        $this->expectException(RansackException::class);
+        $this->expectExceptionMessage("Field 'a_b' not found!");
+        $where = ['a_b_eq' => 1];
+        $this->newRansackBuilder($where);
     }
 
     protected function newRansackBuilder(array $where): RansackBuilder

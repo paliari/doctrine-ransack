@@ -26,7 +26,7 @@ class RansackBuilder
 
     public function includes(array $includes = []): static
     {
-        $this->qbManager->includes($includes);
+        $this->getQbManager()->includes($includes);
 
         return $this;
     }
@@ -43,11 +43,6 @@ class RansackBuilder
         return $this;
     }
 
-    public function getConfig(): RansackConfig
-    {
-        return $this->config;
-    }
-
     public function getQbManager(): QueryBuilderManger
     {
         return $this->qbManager;
@@ -56,7 +51,7 @@ class RansackBuilder
     #[Pure]
     public function getQueryBuilder(): QueryBuilder
     {
-        return $this->qbManager->getQueryBuilder();
+        return $this->getQbManager()->getQueryBuilder();
     }
 
     public function getQuery(): Query
