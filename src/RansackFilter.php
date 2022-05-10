@@ -7,8 +7,8 @@ use Paliari\Doctrine\Expressions\Where\GroupByExpr;
 use Paliari\Doctrine\Expressions\Where\OrderByExpr;
 use Paliari\Doctrine\VO\FilterVO;
 use Paliari\Doctrine\VO\ParamFilterVO;
-use Paliari\Doctrine\VO\WhereOrderByVO;
-use Paliari\Doctrine\VO\WhereParamsVO;
+use Paliari\Doctrine\VO\RansackOrderByVO;
+use Paliari\Doctrine\VO\RansackParamsVO;
 
 class RansackFilter
 {
@@ -24,7 +24,7 @@ class RansackFilter
     /**
      * @throws RansackException
      */
-    public function apply(WhereParamsVO $paramsVO): QueryBuilderManger
+    public function apply(RansackParamsVO $paramsVO): QueryBuilderManger
     {
         foreach ($this->where($paramsVO->where) as $filter) {
             $this->qbManager->getQueryBuilder()->andWhere($filter);
@@ -71,7 +71,7 @@ class RansackFilter
     }
 
     /**
-     * @param WhereOrderByVO[] $orderBy
+     * @param RansackOrderByVO[] $orderBy
      *
      * @throws RansackException
      */

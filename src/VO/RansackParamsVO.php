@@ -4,7 +4,7 @@ namespace Paliari\Doctrine\VO;
 
 use Paliari\Utils\VO\AbstractVO;
 
-class WhereParamsVO extends AbstractVO
+class RansackParamsVO extends AbstractVO
 {
     /**
      * @var array[]
@@ -12,7 +12,7 @@ class WhereParamsVO extends AbstractVO
     public array $where = [];
 
     /**
-     * @var WhereOrderByVO[]
+     * @var RansackOrderByVO[]
      */
     public array $orderBy = [];
 

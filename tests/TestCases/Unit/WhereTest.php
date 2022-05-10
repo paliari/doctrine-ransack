@@ -8,7 +8,7 @@ use Paliari\Doctrine\Exceptions\RansackException;
 use Paliari\Doctrine\Ransack;
 use Paliari\Doctrine\RansackBuilder;
 use Paliari\Doctrine\RansackConfig;
-use Paliari\Doctrine\VO\WhereParamsVO;
+use Paliari\Doctrine\VO\RansackParamsVO;
 use PHPUnit\Framework\TestCase;
 use Tests\EM;
 use User;
@@ -367,7 +367,7 @@ class WhereTest extends TestCase
         $modelName = User::class;
         $alias = 't';
         $qb = EM::getEm()->createQueryBuilder()->from($modelName, $alias);
-        $paramsVO = new WhereParamsVO();
+        $paramsVO = new RansackParamsVO();
         $paramsVO->where = $where;
 
         return $this->ransack->query($qb, $modelName, $alias)->where($paramsVO)->includes();

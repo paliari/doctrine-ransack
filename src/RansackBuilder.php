@@ -7,7 +7,7 @@ use Doctrine\ORM\QueryBuilder;
 use JetBrains\PhpStorm\Pure;
 use Paliari\Doctrine\Exceptions\RansackException;
 use Paliari\Doctrine\Factories\RansackFilterFactory;
-use Paliari\Doctrine\VO\WhereParamsVO;
+use Paliari\Doctrine\VO\RansackParamsVO;
 
 class RansackBuilder
 {
@@ -34,7 +34,7 @@ class RansackBuilder
     /**
      * @throws RansackException
      */
-    public function where(WhereParamsVO $paramsVO): static
+    public function where(RansackParamsVO $paramsVO): static
     {
         $this->filterFactory
             ->create($this->qbManager, $this->modelName, $this->alias)
