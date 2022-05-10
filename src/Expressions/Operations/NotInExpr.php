@@ -1,14 +1,14 @@
 <?php
 
-namespace Paliari\Doctrine\Expressions\Where;
+namespace Paliari\Doctrine\Expressions\Operations;
 
 use Doctrine\ORM\Query\Expr\Func;
 use Doctrine\ORM\QueryBuilder;
 use Paliari\Doctrine\VO\FilterVO;
 
-class InExpr extends AbstractExpr
+class NotInExpr extends AbstractExpr
 {
-    public const NAME = 'in';
+    public const NAME = 'not_in';
 
     public function create(QueryBuilder $qb, FilterVO $vo): Func
     {
@@ -17,6 +17,6 @@ class InExpr extends AbstractExpr
         $values = array_map(fn($v) => $conn->convertToDatabaseValue($v, $vo->type), (array)$vo->value);
         $qb->setParameter($key, $values);
 
-        return $qb->expr()->in($vo->field, ":$key");
+        return $qb->expr()->notIn($vo->field, ":$key");
     }
 }

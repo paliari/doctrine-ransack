@@ -5,8 +5,8 @@ namespace Tests\TestCases\Unit;
 use Paliari\Doctrine\Ransack;
 use Paliari\Doctrine\RansackBuilder;
 use Paliari\Doctrine\RansackConfig;
-use Paliari\Doctrine\VO\WhereOrderByVO;
-use Paliari\Doctrine\VO\WhereParamsVO;
+use Paliari\Doctrine\VO\RansackOrderByVO;
+use Paliari\Doctrine\VO\RansackParamsVO;
 use PHPUnit\Framework\TestCase;
 use Tests\EM;
 use User;
@@ -23,7 +23,7 @@ class RansackTest extends TestCase
 
     public function testDql()
     {
-        $paramsVO = new WhereParamsVO();
+        $paramsVO = new RansackParamsVO();
         $paramsVO->where = [
             'person_name_cont' => 'ze das cove',
             'person_address_street_eq' => 'abc',
@@ -47,10 +47,10 @@ class RansackTest extends TestCase
 
     public function testOrderBy()
     {
-        $paramsVO = new WhereParamsVO();
+        $paramsVO = new RansackParamsVO();
         $paramsVO->orderBy = [
-            new WhereOrderByVO(['field' => 'person.name', 'order' => 'ASC']),
-            new WhereOrderByVO(['field' => 'person.id', 'order' => 'DESC']),
+            new RansackOrderByVO(['field' => 'person.name', 'order' => 'ASC']),
+            new RansackOrderByVO(['field' => 'person.id', 'order' => 'DESC']),
         ];
         $rb = $this->newRansackBuilder($paramsVO);
         $expectedDql = 'SELECT t FROM User t LEFT JOIN t.person t_person ORDER BY t_person.name ASC, t_person.id DESC';
@@ -60,7 +60,7 @@ class RansackTest extends TestCase
 
     public function testGroupBy()
     {
-        $paramsVO = new WhereParamsVO();
+        $paramsVO = new RansackParamsVO();
         $paramsVO->groupBy = [
             'person.name',
             'person.address_id',
@@ -71,7 +71,7 @@ class RansackTest extends TestCase
         $this->assertEquals($expectedDql, $dql);
     }
 
-    protected function newRansackBuilder(WhereParamsVO $paramsVO): RansackBuilder
+    protected function newRansackBuilder(RansackParamsVO $paramsVO): RansackBuilder
     {
         $modelName = User::class;
         $alias = 't';

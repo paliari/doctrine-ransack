@@ -2,7 +2,7 @@
 
 namespace Tests\TestCases\Functional\RansackQueryBuilder;
 
-use Paliari\Doctrine\VO\WhereParamsVO;
+use Paliari\Doctrine\VO\RansackParamsVO;
 use Tests\CustomAssociation;
 use Tests\EM;
 use Tests\TestCases\Functional\BaseTestFunctional;
@@ -19,7 +19,7 @@ class CustomAssociationTest extends BaseTestFunctional
         $person2 = $this->personFactory->create([]);
         $user1 = $this->userFactory->create([], $person1);
         $user2 = $this->userFactory->create(['email' => $this->faker->email], $person2);
-        $paramsVO = new WhereParamsVO();
+        $paramsVO = new RansackParamsVO();
         $paramsVO->where = [
             'custom_email_eq' => $person1->email,
             'id_order_by' => 'asc',

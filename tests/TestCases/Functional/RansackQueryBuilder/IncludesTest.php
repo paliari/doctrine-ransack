@@ -2,7 +2,7 @@
 
 namespace Tests\TestCases\Functional\RansackQueryBuilder;
 
-use Paliari\Doctrine\VO\WhereParamsVO;
+use Paliari\Doctrine\VO\RansackParamsVO;
 use Tests\EM;
 use Tests\TestCases\Functional\BaseTestFunctional;
 use User;
@@ -22,7 +22,7 @@ class IncludesTest extends BaseTestFunctional
         }
         $modelName = User::class;
         $alias = 't';
-        $paramsVO = new WhereParamsVO();
+        $paramsVO = new RansackParamsVO();
         $paramsVO->where = [
             'id_order_by' => 'asc',
         ];

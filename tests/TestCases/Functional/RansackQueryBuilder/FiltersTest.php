@@ -2,7 +2,7 @@
 
 namespace Tests\TestCases\Functional\RansackQueryBuilder;
 
-use Paliari\Doctrine\VO\WhereParamsVO;
+use Paliari\Doctrine\VO\RansackParamsVO;
 use Tests\TestCases\Functional\BaseTestFunctional;
 use User;
 
@@ -20,7 +20,7 @@ class FiltersTest extends BaseTestFunctional
         $user1 = $this->userFactory->create([], $person1);
         $user2 = $this->userFactory->create([], $person2);
         $user3 = $this->userFactory->create([], $person3);
-        $paramsVO = new WhereParamsVO();
+        $paramsVO = new RansackParamsVO();
         $paramsVO->where = [
             'person_address_street_eq' => $address2->street,
             'person_address_city_eq' => $address2->city,

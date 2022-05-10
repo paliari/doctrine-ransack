@@ -4,7 +4,7 @@ namespace Paliari\Doctrine\VO;
 
 use Paliari\Utils\VO\AbstractVO;
 
-class WhereOrderByVO extends AbstractVO
+class RansackOrderByVO extends AbstractVO
 {
     public const ASC = 'ASC';
     public const DESC = 'DESC';

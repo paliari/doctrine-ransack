@@ -21,20 +21,20 @@ $ransack = new Ransack(new RansackConfig());
 <?php
 use Paliari\Doctrine\Ransack;
 use Paliari\Doctrine\RansackConfig;
-use Paliari\Doctrine\VO\WhereOrderByVO;
-use Paliari\Doctrine\VO\WhereParamsVO;
+use Paliari\Doctrine\VO\RansackOrderByVO;
+use Paliari\Doctrine\VO\RansackParamsVO;
 
 $modelName = User::class;
 $alias = 't';
-$paramsVO = new WhereParamsVO();
+$paramsVO = new RansackParamsVO();
 $paramsVO->where = [
     'person.address.street_cont' => 'Av Brasil',
     'person.address.city_eq' => 'Maringá',
     'id_order_by' => 'asc',
 ];
 $paramsVO->orderBy = [
-    new WhereOrderByVO(['field' => 'person.name', 'order' => 'ASC']),
-    new WhereOrderByVO(['field' => 'person.id', 'order' => 'DESC']),
+    new RansackOrderByVO(['field' => 'person.name', 'order' => 'ASC']),
+    new RansackOrderByVO(['field' => 'person.id', 'order' => 'DESC']),
 ];
 $paramsVO->groupBy = [
     'person.name',
