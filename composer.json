@@ -36,5 +36,5 @@
         "fzaninotto/faker": "^1.5"
     },
     "type": "library",
-    "version": "2.0.2"
+    "version": "2.0.3"
 }
