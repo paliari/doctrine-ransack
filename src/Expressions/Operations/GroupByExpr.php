@@ -1,17 +1,17 @@
 <?php
 
-namespace Paliari\Doctrine\Expressions\Where;
+namespace Paliari\Doctrine\Expressions\Operations;
 
 use Doctrine\ORM\QueryBuilder;
 use Paliari\Doctrine\VO\FilterVO;
 
-class OrderByExpr extends AbstractExpr
+class GroupByExpr extends AbstractExpr
 {
-    public const NAME = 'order_by';
+    public const NAME = 'group_by';
 
     public function create(QueryBuilder $qb, FilterVO $vo): mixed
     {
-        $qb->addOrderBy($vo->field, $vo->value);
+        $qb->addGroupBy($vo->field);
 
         return null;
     }

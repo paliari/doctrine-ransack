@@ -3,8 +3,8 @@
 namespace Paliari\Doctrine;
 
 use Paliari\Doctrine\Exceptions\RansackException;
-use Paliari\Doctrine\Expressions\Where\GroupByExpr;
-use Paliari\Doctrine\Expressions\Where\OrderByExpr;
+use Paliari\Doctrine\Expressions\Operations\GroupByExpr;
+use Paliari\Doctrine\Expressions\Operations\OrderByExpr;
 use Paliari\Doctrine\VO\FilterVO;
 use Paliari\Doctrine\VO\ParamFilterVO;
 use Paliari\Doctrine\VO\RansackOrderByVO;

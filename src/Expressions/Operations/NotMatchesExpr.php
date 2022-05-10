@@ -1,20 +1,20 @@
 <?php
 
-namespace Paliari\Doctrine\Expressions\Where;
+namespace Paliari\Doctrine\Expressions\Operations;
 
 use Doctrine\ORM\Query\Expr\Comparison;
 use Doctrine\ORM\QueryBuilder;
 use Paliari\Doctrine\VO\FilterVO;
 
-class LtExpr extends AbstractExpr
+class NotMatchesExpr extends AbstractExpr
 {
-    public const NAME = 'lt';
+    public const NAME = 'not_matches';
 
     public function create(QueryBuilder $qb, FilterVO $vo): Comparison
     {
         $key = $this->fieldKey($vo->field, static::NAME);
         $qb->setParameter($key, $vo->value, $vo->type);
 
-        return $qb->expr()->lt($vo->field, ":$key");
+        return $qb->expr()->notLike($vo->field, ":$key");
     }
 }

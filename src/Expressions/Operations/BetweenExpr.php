@@ -1,6 +1,6 @@
 <?php
 
-namespace Paliari\Doctrine\Expressions\Where;
+namespace Paliari\Doctrine\Expressions\Operations;
 
 use Doctrine\ORM\QueryBuilder;
 use Paliari\Doctrine\VO\FilterVO;
