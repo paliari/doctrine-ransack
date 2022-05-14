@@ -156,266 +156,280 @@ $where = [
 
 ### List of all possible predicates
 
-  - #### eq (equals)
+  - #### *_eq (equal)
     - Example: 
   
       ```json
-      {"field_eq": "Fulano da Silva"}
+      {"col_eq": "Fulano da Silva"}
       ```
   
     - SQL result: 
   
       ```sql 
-      WHERE table.field = 'Fulano da Silva'
+      WHERE col = 'Fulano da Silva'
       ```
     
-  - #### not_eq (not equals)
+  - #### *_not_eq (not equal)
     - Example: 
   
       ```json
-      {"field_not_eq": "Fulano da Silva"}
+      {"col_not_eq": "Fulano da Silva"}
       ```
   
     - SQL result: 
   
       ```sql 
-      WHERE table.field <> 'Fulano da Silva'
+      WHERE col <> 'Fulano da Silva'
       ```
     
-  - #### in (in)
+  - #### *_in (match any values in array)
     - Example: 
   
       ```json
-      {"field_in": [13, 21, 124, 525]}
+      {"col_in": [13, 21, 124, 525]}
       ```
   
     - SQL result: 
   
       ```sql 
-      WHERE table.field IN (13, 21, 124, 525)
+      WHERE col IN (13, 21, 124, 525)
       ```
     
-  - #### not_in (not in)
+  - #### *_not_in (match none of values in array)
     - Example: 
   
       ```json
-      {"field_not_in": [13, 21, 124, 525]}
+      {"col_not_in": [13, 21, 124, 525]}
       ```
   
     - SQL result: 
   
       ```sql 
-      WHERE table.field NOT IN (13, 21, 124, 525)
+      WHERE col NOT IN (13, 21, 124, 525)
+      ```
+
+  - #### *_null (is null)
+    - Example: 
+  
+      ```json
+      {"col_null": null}
+      ```
+  
+    - SQL result: 
+  
+      ```sql 
+      WHERE col IS NULL
+      ```
+
+  - #### *_not_null (is not null)
+    - Example: 
+  
+      ```json
+      {"col_not_null": null}
+      ```
+  
+    - SQL result: 
+  
+      ```sql 
+      WHERE col IS NOT NULL
+      ```
+
+  - #### *_present (not null and not empty)
+    Only compatible with string columns.
+    - Example: 
+  
+      ```json
+      {"col_present": 1}
+      ```
+  
+    - SQL result: 
+  
+      ```sql 
+      WHERE col IS NOT NULL AND col != ''
+      ```
+
+  - #### *_blank (is null or empty)
+    Only compatible with string columns.
+    - Example: 
+  
+      ```json
+      {"col_blank": 1}
+      ```
+  
+    - SQL result: 
+  
+      ```sql 
+      WHERE col IS NULL OR col = ''
+      ```
+
+  - #### *_lt (less than)
+    - Example: 
+  
+      ```json
+      {"col_lt": 25}
+      ```
+
+    - SQL result: 
+  
+      ```sql 
+      WHERE col < 25
+      ```
+
+  - #### *_lteq (less than or equal to)
+    - Example: 
+
+      ```json
+      {"col_lteq": 25}
+      ```
+
+    - SQL result: 
+  
+      ```sql 
+      WHERE col <= 25
+      ```
+
+  - #### *_gt (greater than)
+    - Example: 
+  
+      ```json
+      {"col_gt": 25}
+      ```
+  
+    - SQL result: 
+  
+      ```sql 
+      WHERE col > 25
       ```
     
-  - #### null (null)
+  - #### *_gteq (greater than or equal to)
     - Example: 
   
       ```json
-      {"field_null": null}
+      {"col_gteq": 25}
       ```
   
     - SQL result: 
   
       ```sql 
-      WHERE table.field IS NULL
+      WHERE col >= 25
+      ```
+
+  - #### *_matches (matches with `LIKE`)
+    - Example: 
+  
+      ```json
+      {"col_matches": "Fulano"}
+      ```
+  
+    - SQL result: 
+  
+      ```sql 
+      WHERE col LIKE 'Fulano'
       ```
     
-  - #### not_null (not null)
+  - #### *_not_matches (does not match with `LIKE`)
     - Example: 
   
       ```json
-      {"field_not_null": null}
+      {"col_not_matches": "Fulano"}
       ```
   
     - SQL result: 
   
       ```sql 
-      WHERE table.field IS NOT NULL
-      ```
-    
-  - #### lt (less than)
-    - Example: 
-  
-      ```json
-      {"field_lt": 25}
-      ```
-  
-    - SQL result: 
-  
-      ```sql 
-      WHERE table.field < 25
-      ```
-    
-  - #### lteq (less than or equal to)
-    - Example: 
-  
-      ```json
-      {"field_lteq": 25}
-      ```
-  
-    - SQL result: 
-  
-      ```sql 
-      WHERE table.field <= 25
+      WHERE col NOT LIKE 'Fulano'
       ```
 
-  - #### gt (greater than)
+  - #### *_cont (contains value)
     - Example: 
   
       ```json
-      {"field_gt": 25}
+      {"col_cont": "Fulano"}
       ```
   
     - SQL result: 
   
       ```sql 
-      WHERE table.field > 25
-      ```
-    
-  - #### gteq (greater than or equal to)
-    - Example: 
-  
-      ```json
-      {"field_gteq": 25}
-      ```
-  
-    - SQL result: 
-  
-      ```sql 
-      WHERE table.field >= 25
+      WHERE col LIKE '%Fulano%'
       ```
 
-  - #### matches (matches)
+  - #### *_not_cont (does not contain)
     - Example: 
   
       ```json
-      {"field_matches": "Fulano"}
+      {"col_not_cont": "Fulano Silva"}
       ```
   
     - SQL result: 
   
       ```sql 
-      WHERE table.field LIKE 'Fulano'
-      ```
-    
-  - #### not_matches (not matches)
-    - Example: 
-  
-      ```json
-      {"field_not_matches": "Fulano"}
-      ```
-  
-    - SQL result: 
-  
-      ```sql 
-      WHERE table.field NOT LIKE 'Fulano'
+      WHERE col NOT LIKE '%Fulano%Silva%'
       ```
 
-  - #### cont (cont)
+  - #### *_start (starts with)
     - Example: 
   
       ```json
-      {"field_cont": "Fulano"}
+      {"col_start": "Fulano"}
       ```
   
     - SQL result: 
   
       ```sql 
-      WHERE table.field LIKE '%Fulano%'
+      WHERE col LIKE 'Fulano%'
       ```
 
-  - #### not_cont (not cont)
+  - #### *_not_start (does not start with)
     - Example: 
   
       ```json
-      {"field_not_cont": "Fulano Silva"}
+      {"col_not_start": "Fulano"}
       ```
   
     - SQL result: 
   
       ```sql 
-      WHERE table.field NOT LIKE '%Fulano%Silva%'
+      WHERE col NOT LIKE 'Fulano%'
       ```
 
-  - #### start (start)
+  - #### *_end (ends with)
     - Example: 
   
       ```json
-      {"field_start": "Fulano"}
+      {"col_end": "Fulano"}
       ```
   
     - SQL result: 
   
       ```sql 
-      WHERE table.field LIKE 'Fulano%'
+      WHERE col LIKE '%Fulano'
       ```
 
-  - #### not_start (not start)
+  - #### *_not_end (does not end with)
     - Example: 
   
       ```json
-      {"field_not_start": "Fulano"}
+      {"col_not_end": "Fulano"}
       ```
   
     - SQL result: 
   
       ```sql 
-      WHERE table.field NOT LIKE 'Fulano%'
+      WHERE col NOT LIKE '%Fulano'
       ```
 
-  - #### end (end)
+  - #### *_between (between in 2 values)
     - Example: 
   
       ```json
-      {"field_end": "Fulano"}
+      {"col_between": [10, 20]}
       ```
   
     - SQL result: 
   
       ```sql 
-      WHERE table.field LIKE '%Fulano'
+      WHERE col BETWEEN 10 AND 20
       ```
-
-  - #### not_end (not end)
-    - Example: 
-  
-      ```json
-      {"field_not_end": "Fulano"}
-      ```
-  
-    - SQL result: 
-  
-      ```sql 
-      WHERE table.field NOT LIKE '%Fulano'
-      ```
-
-  - #### between (between)
-    - Example: 
-  
-      ```json
-      {"field_between": [10, 20]}
-      ```
-  
-    - SQL result: 
-  
-      ```sql 
-      WHERE table.field BETWEEN 10 AND 20
-      ```
-
-  - #### order_by (order by)
-    - Example: 
-  
-      ```json
-      {"field_order_by": "desc"}
-      ```
-  
-    - SQL result: 
-  
-      ```sql 
-      ORDER BY table.field DESC
-      ```
-
 
 ## Authors
 

@@ -310,6 +310,28 @@ class WhereTest extends TestCase
         $this->assertEquals($expectedName, $rb->getQueryBuilder()->getParameter('t_person_name_start')->getValue());
     }
 
+    public function testPresent()
+    {
+        $where = [
+            'email_present' => 1,
+        ];
+        $rb = $this->newRansackBuilder($where);
+        $expectedDql = "SELECT t FROM User t WHERE t.email IS NOT NULL AND t.email <> ''";
+        $dql = $rb->getQueryBuilder()->getDQL();
+        $this->assertEquals($expectedDql, $dql);
+    }
+
+    public function testBlank()
+    {
+        $where = [
+            'email_blank' => 1,
+        ];
+        $rb = $this->newRansackBuilder($where);
+        $expectedDql = "SELECT t FROM User t WHERE t.email IS NULL OR t.email = ''";
+        $dql = $rb->getQueryBuilder()->getDQL();
+        $this->assertEquals($expectedDql, $dql);
+    }
+
     public function testOr()
     {
         $where = [

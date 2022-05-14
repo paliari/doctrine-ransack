@@ -4,6 +4,7 @@ namespace Paliari\Doctrine\Factories;
 
 use Paliari\Doctrine\Exceptions\RansackException;
 use Paliari\Doctrine\Expressions\Operations\BetweenExpr;
+use Paliari\Doctrine\Expressions\Operations\BlankExpr;
 use Paliari\Doctrine\Expressions\Operations\ContExpr;
 use Paliari\Doctrine\Expressions\Operations\EndExpr;
 use Paliari\Doctrine\Expressions\Operations\EqExpr;
@@ -24,6 +25,7 @@ use Paliari\Doctrine\Expressions\Operations\NotNullExpr;
 use Paliari\Doctrine\Expressions\Operations\NotStartExpr;
 use Paliari\Doctrine\Expressions\Operations\NullExpr;
 use Paliari\Doctrine\Expressions\Operations\OrderByExpr;
+use Paliari\Doctrine\Expressions\Operations\PresentExpr;
 use Paliari\Doctrine\Expressions\Operations\StartExpr;
 
 class ExprFactory
@@ -48,6 +50,8 @@ class ExprFactory
         NotEndExpr::NAME => NotEndExpr::class,
         NotStartExpr::NAME => NotStartExpr::class,
         NotMatchesExpr::NAME => NotMatchesExpr::class,
+        BlankExpr::NAME => BlankExpr::class,
+        PresentExpr::NAME => PresentExpr::class,
         OrderByExpr::NAME => OrderByExpr::class,
         GroupByExpr::NAME => GroupByExpr::class,
     ];

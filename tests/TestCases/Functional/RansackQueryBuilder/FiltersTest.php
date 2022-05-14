@@ -49,4 +49,35 @@ class FiltersTest extends BaseTestFunctional
         $this->assertCount(1, $res);
         $this->assertEquals($user1, $res[0]);
     }
+
+    public function testPresentBlank()
+    {
+        $entityName = \Address::class;
+        $alias = 't';
+        $address1 = $this->addressFactory->create(['street' => '']);
+        $address2 = $this->addressFactory->create();
+        $paramsVO = new RansackParamsVO();
+        $paramsVO->where = [
+            'street_present' => 1,
+        ];
+        $qb = $this->em->createQueryBuilder()->from($entityName, $alias);
+        $res = $this->ransack->query($qb, $entityName, $alias)
+            ->where($paramsVO)
+            ->includes()
+            ->getQuery()
+            ->getResult();
+        $this->assertCount(1, $res);
+        $this->assertEquals($address2, $res[0]);
+        $paramsVO->where = [
+            'street_blank' => 1,
+        ];
+        $qb = $this->em->createQueryBuilder()->from($entityName, $alias);
+        $res = $this->ransack->query($qb, $entityName, $alias)
+            ->where($paramsVO)
+            ->includes()
+            ->getQuery()
+            ->getResult();
+        $this->assertCount(1, $res);
+        $this->assertEquals($address1, $res[0]);
+    }
 }
