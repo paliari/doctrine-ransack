@@ -10,7 +10,7 @@ class FiltersTest extends BaseTestFunctional
 {
     public function testFilter()
     {
-        $modelName = User::class;
+        $entityName = User::class;
         $alias = 't';
         $address1 = $this->addressFactory->create();
         $address2 = $this->addressFactory->create();
@@ -26,8 +26,8 @@ class FiltersTest extends BaseTestFunctional
             'person_address_city_eq' => $address2->city,
             'id_order_by' => 'asc',
         ];
-        $qb = $this->em->createQueryBuilder()->from($modelName, $alias);
-        $res = $this->ransack->query($qb, $modelName, $alias)
+        $qb = $this->em->createQueryBuilder()->from($entityName, $alias);
+        $res = $this->ransack->query($qb, $entityName, $alias)
             ->where($paramsVO)
             ->includes()
             ->getQuery()
@@ -40,8 +40,8 @@ class FiltersTest extends BaseTestFunctional
             'person_address_city_not_eq' => $address2->city,
             'id_order_by' => 'asc',
         ];
-        $qb = $this->em->createQueryBuilder()->from($modelName, $alias);
-        $res = $this->ransack->query($qb, $modelName, $alias)
+        $qb = $this->em->createQueryBuilder()->from($entityName, $alias);
+        $res = $this->ransack->query($qb, $entityName, $alias)
             ->where($paramsVO)
             ->includes()
             ->getQuery()

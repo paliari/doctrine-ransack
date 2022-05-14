@@ -21,7 +21,7 @@ class WhereTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->ransack = new Ransack(new RansackConfig());
+        $this->ransack = new Ransack(new RansackConfig(EM::getEm()));
         $this->faker = Factory::create('pt_BR');
     }
 
@@ -364,12 +364,12 @@ class WhereTest extends TestCase
 
     protected function newRansackBuilder(array $where): RansackBuilder
     {
-        $modelName = User::class;
+        $entityName = User::class;
         $alias = 't';
-        $qb = EM::getEm()->createQueryBuilder()->from($modelName, $alias);
+        $qb = EM::getEm()->createQueryBuilder()->from($entityName, $alias);
         $paramsVO = new RansackParamsVO();
         $paramsVO->where = $where;
 
-        return $this->ransack->query($qb, $modelName, $alias)->where($paramsVO)->includes();
+        return $this->ransack->query($qb, $entityName, $alias)->where($paramsVO)->includes();
     }
 }

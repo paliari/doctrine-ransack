@@ -4,7 +4,7 @@ namespace Paliari\Doctrine;
 
 use Doctrine\ORM\QueryBuilder;
 use JetBrains\PhpStorm\Pure;
-use Paliari\Doctrine\Factories\QueryBuilderManagerFactory;
+use Paliari\Doctrine\Factories\QueryBuilderHelperFactory;
 use Paliari\Doctrine\Factories\RansackBuilderFactory;
 
 /**
@@ -13,28 +13,23 @@ use Paliari\Doctrine\Factories\RansackBuilderFactory;
  */
 class Ransack
 {
-    protected QueryBuilderManagerFactory $managerFactory;
+    protected QueryBuilderHelperFactory $qbHelperFactory;
     protected RansackBuilderFactory $builderFactory;
 
     #[Pure]
     public function __construct(protected RansackConfig $config)
     {
-        $this->managerFactory = new QueryBuilderManagerFactory();
+        $this->qbHelperFactory = new QueryBuilderHelperFactory($this->config->getEntityHelper());
         $this->builderFactory = new RansackBuilderFactory($this->config);
     }
 
     /**
      * Create a Query Builder for model with ransack filters.
      */
-    public function query(QueryBuilder $qb, string $modelName, string $alias = 't'): RansackBuilder
+    public function query(QueryBuilder $qb, string $entityName, string $alias = 't'): RansackBuilder
     {
-        $qbManager = $this->managerFactory->create($qb, $alias);
+        $qbHelper = $this->qbHelperFactory->create($qb, $alias);
 
-        return $this->builderFactory->create($qbManager, $modelName, $alias);
-    }
-
-    public function getConfig(): RansackConfig
-    {
-        return $this->config;
+        return $this->builderFactory->create($qbHelper, $entityName, $alias);
     }
 }

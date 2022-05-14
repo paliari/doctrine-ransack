@@ -2,6 +2,7 @@
 
 namespace Tests\TestCases\Functional\RansackQueryBuilder;
 
+use Paliari\Doctrine\Exceptions\RansackException;
 use Paliari\Doctrine\VO\RansackParamsVO;
 use Tests\EM;
 use Tests\TestCases\Functional\BaseTestFunctional;
@@ -20,7 +21,7 @@ class IncludesTest extends BaseTestFunctional
                 )
             );
         }
-        $modelName = User::class;
+        $entityName = User::class;
         $alias = 't';
         $paramsVO = new RansackParamsVO();
         $paramsVO->where = [
@@ -35,8 +36,8 @@ class IncludesTest extends BaseTestFunctional
                 ],
             ],
         ];
-        $qb = EM::getEm()->createQueryBuilder()->from($modelName, $alias);
-        $rows = $this->ransack->query($qb, $modelName, $alias)
+        $qb = EM::getEm()->createQueryBuilder()->from($entityName, $alias);
+        $rows = $this->ransack->query($qb, $entityName, $alias)
             ->where($paramsVO)
             ->includes($includes)
             ->getQuery()
@@ -60,5 +61,26 @@ class IncludesTest extends BaseTestFunctional
             ];
             $this->assertEquals($expected, $row);
         }
+    }
+
+    public function testIncludesRansackException()
+    {
+        $this->expectException(RansackException::class);
+        $this->expectExceptionMessage("Relation 'no_relation' not found!");
+        $entityName = User::class;
+        $alias = 't';
+        $paramsVO = new RansackParamsVO();
+        $includes = [
+            'only' => ['id', 'email'],
+            'include' => [
+                'no_relation' => ['only' => ['name']],
+            ],
+        ];
+        $qb = EM::getEm()->createQueryBuilder()->from($entityName, $alias);
+        $this->ransack->query($qb, $entityName, $alias)
+            ->where($paramsVO)
+            ->includes($includes)
+            ->getQuery()
+            ->getArrayResult();
     }
 }

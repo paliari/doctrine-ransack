@@ -4,12 +4,12 @@ namespace Paliari\Doctrine\VO;
 
 use Paliari\Utils\VO\AbstractVO;
 
-class FilterFkVO extends AbstractVO
+class FilterRelationVO extends AbstractVO
 {
     /**
      * @var RelationVO[]
      */
-    public array $fks = [];
+    public array $relations = [];
     public ?string $field = null;
     public ?string $type = null;
 }

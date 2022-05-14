@@ -2,35 +2,32 @@
 
 namespace Paliari\Doctrine;
 
+use Doctrine\ORM\EntityManager;
 use JetBrains\PhpStorm\Pure;
-use Paliari\Doctrine\Expressions\FilterFkManager;
-use Paliari\Doctrine\Expressions\ParamFilterParser;
+use Paliari\Doctrine\Expressions\ExprRelationManager;
+use Paliari\Doctrine\Expressions\ParamExprParser;
 use Paliari\Doctrine\Factories\ExprFactory;
+use Paliari\Doctrine\Helpers\EntityHelper;
 
 class RansackConfig
 {
     protected ExprFactory $exprFactory;
-    protected ParamFilterParser $paramFilterParser;
-    protected FilterFkManager $filterFkManager;
+    protected ParamExprParser $paramExprParser;
+    protected ExprRelationManager $exprRelationManager;
+    protected EntityHelper $entityHelper;
 
     #[Pure]
-    public function __construct()
+    public function __construct(protected EntityManager $em, ?CustomAssociationInterface $customAssociation = null)
     {
+        $this->entityHelper = new EntityHelper($this->em, $customAssociation);
+        $this->exprRelationManager = new ExprRelationManager($this->entityHelper);
+        $this->paramExprParser = new ParamExprParser();
         $this->exprFactory = new ExprFactory();
-        $this->paramFilterParser = new ParamFilterParser();
-        $this->filterFkManager = new FilterFkManager();
     }
 
-    public function setCustomAssociation(?CustomAssociationInterface $customAssociation): static
+    public function getParamExprParser(): ParamExprParser
     {
-        $this->filterFkManager->setCustomAssociation($customAssociation);
-
-        return $this;
-    }
-
-    public function getParamFilterParser(): ParamFilterParser
-    {
-        return $this->paramFilterParser;
+        return $this->paramExprParser;
     }
 
     public function getExprFactory(): ExprFactory
@@ -38,8 +35,13 @@ class RansackConfig
         return $this->exprFactory;
     }
 
-    public function getFilterFkManager(): FilterFkManager
+    public function getExprRelationManager(): ExprRelationManager
     {
-        return $this->filterFkManager;
+        return $this->exprRelationManager;
+    }
+
+    public function getEntityHelper(): EntityHelper
+    {
+        return $this->entityHelper;
     }
 }

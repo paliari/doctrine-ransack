@@ -2,6 +2,8 @@
 
 namespace Tests\TestCases\Functional\RansackQueryBuilder;
 
+use Paliari\Doctrine\Ransack;
+use Paliari\Doctrine\RansackConfig;
 use Paliari\Doctrine\VO\RansackParamsVO;
 use Tests\CustomAssociation;
 use Tests\EM;
@@ -10,10 +12,15 @@ use User;
 
 class CustomAssociationTest extends BaseTestFunctional
 {
+    protected function setUp(): void
+    {
+        parent::setUp();
+        $this->ransack = new Ransack(new RansackConfig(EM::getEm(), new CustomAssociation()));
+    }
+
     public function testFilter()
     {
-        $this->ransack->getConfig()->setCustomAssociation(new CustomAssociation());
-        $modelName = User::class;
+        $entityName = User::class;
         $alias = 't';
         $person1 = $this->personFactory->create([]);
         $person2 = $this->personFactory->create([]);
@@ -24,9 +31,9 @@ class CustomAssociationTest extends BaseTestFunctional
             'custom_email_eq' => $person1->email,
             'id_order_by' => 'asc',
         ];
-        $qb = $this->em->createQueryBuilder()->from($modelName, $alias);
+        $qb = $this->em->createQueryBuilder()->from($entityName, $alias);
         $this->assertNotEquals($user2->email, $user2->getPerson()->email);
-        $res = $this->ransack->query($qb, $modelName, $alias)
+        $res = $this->ransack->query($qb, $entityName, $alias)
             ->where($paramsVO)
             ->includes()
             ->getQuery()

@@ -6,27 +6,28 @@ use Doctrine\ORM\Query;
 use Doctrine\ORM\QueryBuilder;
 use JetBrains\PhpStorm\Pure;
 use Paliari\Doctrine\Exceptions\RansackException;
-use Paliari\Doctrine\Factories\RansackFilterFactory;
+use Paliari\Doctrine\Factories\RansackFilterHelperFactory;
+use Paliari\Doctrine\Helpers\QueryBuilderHelper;
 use Paliari\Doctrine\VO\RansackParamsVO;
 
 class RansackBuilder
 {
-    protected RansackFilterFactory $filterFactory;
+    protected RansackFilterHelperFactory $filterHelperFactory;
 
     #[Pure]
     public function __construct(
         protected RansackConfig $config,
-        protected QueryBuilderManger $qbManager,
-        protected string $modelName,
+        protected QueryBuilderHelper $qbHelper,
+        protected string $entityName,
         protected string $alias = 't',
     )
     {
-        $this->filterFactory = new RansackFilterFactory($this->config);
+        $this->filterHelperFactory = new RansackFilterHelperFactory($this->config);
     }
 
     public function includes(array $includes = []): static
     {
-        $this->getQbManager()->includes($includes);
+        $this->getQbHelper()->includes($includes);
 
         return $this;
     }
@@ -36,22 +37,22 @@ class RansackBuilder
      */
     public function where(RansackParamsVO $paramsVO): static
     {
-        $this->filterFactory
-            ->create($this->qbManager, $this->modelName, $this->alias)
+        $this->filterHelperFactory
+            ->create($this->qbHelper, $this->entityName, $this->alias)
             ->apply($paramsVO);
 
         return $this;
     }
 
-    public function getQbManager(): QueryBuilderManger
+    public function getQbHelper(): QueryBuilderHelper
     {
-        return $this->qbManager;
+        return $this->qbHelper;
     }
 
     #[Pure]
     public function getQueryBuilder(): QueryBuilder
     {
-        return $this->getQbManager()->getQueryBuilder();
+        return $this->getQbHelper()->getQueryBuilder();
     }
 
     public function getQuery(): Query

@@ -6,7 +6,7 @@ use Doctrine\ORM\EntityManager;
 
 class EM
 {
-    protected static $_em;
+    protected static EntityManager $_em;
 
     public static function setEm(EntityManager $em)
     {

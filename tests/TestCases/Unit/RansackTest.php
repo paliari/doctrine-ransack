@@ -18,7 +18,7 @@ class RansackTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->ransack = new Ransack(new RansackConfig());
+        $this->ransack = new Ransack(new RansackConfig(EM::getEm()));
     }
 
     public function testDql()
@@ -73,10 +73,10 @@ class RansackTest extends TestCase
 
     protected function newRansackBuilder(RansackParamsVO $paramsVO): RansackBuilder
     {
-        $modelName = User::class;
+        $entityName = User::class;
         $alias = 't';
-        $qb = EM::getEm()->createQueryBuilder()->from($modelName, $alias);
+        $qb = EM::getEm()->createQueryBuilder()->from($entityName, $alias);
 
-        return $this->ransack->query($qb, $modelName, $alias)->where($paramsVO)->includes();
+        return $this->ransack->query($qb, $entityName, $alias)->where($paramsVO)->includes();
     }
 }

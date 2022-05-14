@@ -12,7 +12,7 @@ Your setup, example
 use Paliari\Doctrine\Ransack;
 use Paliari\Doctrine\RansackConfig;
 
-$ransack = new Ransack(new RansackConfig());
+$ransack = new Ransack(new RansackConfig($entityManager));
 
 ```
 ### Usage
@@ -24,12 +24,16 @@ use Paliari\Doctrine\RansackConfig;
 use Paliari\Doctrine\VO\RansackOrderByVO;
 use Paliari\Doctrine\VO\RansackParamsVO;
 
-$modelName = User::class;
+$entityName = User::class;
 $alias = 't';
 $paramsVO = new RansackParamsVO();
 $paramsVO->where = [
-    'person.address.street_cont' => 'Av Brasil',
-    'person.address.city_eq' => 'Maringá',
+    'person.address.street_cont' => 'Av% Brasil',
+    'or' => [
+        'name_eq' => 'Jhon',
+        'email_start' => 'jhon',
+        'person.address.city_eq' => 'Maringá',
+    ],
     'id_order_by' => 'asc',
 ];
 $paramsVO->orderBy = [
@@ -40,12 +44,12 @@ $paramsVO->groupBy = [
     'person.name',
     'person.address_id',
 ];
-$qb = $entityManager->createQueryBuilder()->from($modelName, $alias);
-$rb = $this->ransack
-    ->query($qb, $modelName, $alias)
+$qb = $entityManager->createQueryBuilder()->from($entityName, $alias);
+$ransackBuilder = $this->ransack
+    ->query($qb, $entityName, $alias)
     ->includes()
     ->where($paramsVO);
-$users = $rb->getQuery()->getResult();
+$users = $ransackBuilder->getQuery()->getResult();
 
 // Using includes
 $includes = [
@@ -54,7 +58,7 @@ $includes = [
     'person' ['only' => ['id', 'name']],
   ],
 ];
-$rows = $rb->includes($includes)->getArrayResult();
+$rows = $ransackBuilder->includes($includes)->getArrayResult();
 
 
 ```
@@ -66,7 +70,6 @@ Your class of get custom association
 <?php
 
 use Doctrine\ORM\Query\Expr\Join;
-use Doctrine\ORM\QueryBuilder;
 use Paliari\Doctrine\CustomAssociationInterface;
 use Paliari\Doctrine\VO\RelationVO;
 use Paliari\Doctrine\VO\JoinVO;
@@ -75,11 +78,11 @@ use User;
 
 class CustomAssociation implements CustomAssociationInterface
 {
-    public function __invoke(QueryBuilder $qb, string $modelName, string $alias, string $field): ?RelationVO
+    public function __invoke(string $entityName, string $alias, string $field): ?RelationVO
     {
-        if (User::class === $modelName && 'custom' == $field) {
+        if (User::class === $entityName && 'custom' == $field) {
             $relationVO = new RelationVO();
-            $relationVO->modelName = $modelName;
+            $relationVO->entityName = $entityName;
             $relationVO->fieldName = $field;
             $relationVO->targetEntity = Person::class;
             $joinVO = new JoinVO();
@@ -103,13 +106,55 @@ use Paliari\Doctrine\Ransack;
 use Paliari\Doctrine\RansackConfig;
 
 $customAssociation = new CustomAssociation();
-$config = new RansackConfig();
-$config->setCustomAssociation($customAssociation);
+$config = new RansackConfig($entityManager, $customAssociation);
 $ransack = new Ransack($config);
+
+$entityName = User::class;
+$alias = 't';
+$paramsVO = new RansackParamsVO();
+$paramsVO->where = [
+    'custom.email_eq' => 'your-email@gmail.com',
+];
+$includes = [
+  'only' => ['id', 'email'],
+  'include' => [
+    'custom' ['only' => ['id', 'name']],
+  ],
+];
+$qb = $entityManager->createQueryBuilder()->from($entityName, $alias);
+$ransackBuilder = $this->ransack
+    ->query($qb, $entityName, $alias)
+    ->includes()
+    ->where($paramsVO);
+$users = $ransackBuilder->getQuery()->getResult();
 
 ```
 
 ## Filters
+
+The filters must be passed in a hash with the name of
+the key containing the field ending with the predicates
+below ex: `person.name_eq`, `person.id_gt`.
+
+It is also possible to combine predicates within `or` or `and` clauses, eg:
+
+```php
+$where = [
+    'name_cont' => 'Jhon',
+    'or' => [
+        'person.name_start' => 'Jhon',
+        'person.email_end' => '@gmail.com',
+        'and' => [
+            'person.address.city_eq' => 'Maringá',
+            'person.address.state_eq' => 'PR',
+        ],
+    ],
+];
+
+```
+
+
+### List of all possible predicates
 
   - #### eq (equals)
     - Example: 

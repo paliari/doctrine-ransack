@@ -3,20 +3,19 @@
 namespace Tests;
 
 use Doctrine\ORM\Query\Expr\Join;
-use Doctrine\ORM\QueryBuilder;
 use Paliari\Doctrine\CustomAssociationInterface;
-use Paliari\Doctrine\VO\RelationVO;
 use Paliari\Doctrine\VO\JoinVO;
+use Paliari\Doctrine\VO\RelationVO;
 use Person;
 use User;
 
 class CustomAssociation implements CustomAssociationInterface
 {
-    public function __invoke(QueryBuilder $qb, string $modelName, string $alias, string $field): ?RelationVO
+    public function __invoke(string $entityName, string $alias, string $field): ?RelationVO
     {
-        if (User::class === $modelName && 'custom' == $field) {
+        if (User::class === $entityName && 'custom' == $field) {
             $relationVO = new RelationVO();
-            $relationVO->modelName = $modelName;
+            $relationVO->entityName = $entityName;
             $relationVO->fieldName = $field;
             $relationVO->targetEntity = Person::class;
             $joinVO = new JoinVO();

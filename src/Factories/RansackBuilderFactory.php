@@ -2,7 +2,7 @@
 
 namespace Paliari\Doctrine\Factories;
 
-use Paliari\Doctrine\QueryBuilderManger;
+use Paliari\Doctrine\Helpers\QueryBuilderHelper;
 use Paliari\Doctrine\RansackBuilder;
 use Paliari\Doctrine\RansackConfig;
 
@@ -12,8 +12,8 @@ class RansackBuilderFactory
     {
     }
 
-    public function create(QueryBuilderManger $qbManager, string $modelName, string $alias = 't'): RansackBuilder
+    public function create(QueryBuilderHelper $qbHelper, string $entityName, string $alias = 't'): RansackBuilder
     {
-        return new RansackBuilder($this->config, $qbManager, $modelName, $alias);
+        return new RansackBuilder($this->config, $qbHelper, $entityName, $alias);
     }
 }

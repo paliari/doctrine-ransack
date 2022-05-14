@@ -2,10 +2,9 @@
 
 namespace Paliari\Doctrine;
 
-use Doctrine\ORM\QueryBuilder;
 use Paliari\Doctrine\VO\RelationVO;
 
 interface CustomAssociationInterface
 {
-    public function __invoke(QueryBuilder $qb, string $modelName, string $alias, string $field): ?RelationVO;
+    public function __invoke(string $entityName, string $alias, string $field): ?RelationVO;
 }

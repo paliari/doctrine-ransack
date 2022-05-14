@@ -6,7 +6,7 @@ use Paliari\Doctrine\Exceptions\RansackException;
 use Paliari\Doctrine\Factories\ExprFactory;
 use Paliari\Doctrine\VO\ParamFilterVO;
 
-class ParamFilterParser
+class ParamExprParser
 {
     protected string $pattern;
 

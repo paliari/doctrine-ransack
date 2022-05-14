@@ -30,7 +30,7 @@ class BaseTestFunctional extends TestCase
         $this->addressFactory = new AddressFactory();
         $this->personFactory = new PersonFactory();
         $this->userFactory = new UserFactory();
-        $this->ransack = new Ransack(new RansackConfig());
+        $this->ransack = new Ransack(new RansackConfig(EM::getEm()));
         $this->faker = Factory::create('pt_BR');
     }
 

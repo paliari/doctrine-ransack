@@ -1,21 +1,22 @@
 <?php
 
-namespace Paliari\Doctrine;
+namespace Paliari\Doctrine\Helpers;
 
 use Paliari\Doctrine\Exceptions\RansackException;
 use Paliari\Doctrine\Expressions\Operations\GroupByExpr;
 use Paliari\Doctrine\Expressions\Operations\OrderByExpr;
+use Paliari\Doctrine\RansackConfig;
 use Paliari\Doctrine\VO\FilterVO;
 use Paliari\Doctrine\VO\ParamFilterVO;
 use Paliari\Doctrine\VO\RansackOrderByVO;
 use Paliari\Doctrine\VO\RansackParamsVO;
 
-class RansackFilter
+class RansackFilterHelper
 {
     public function __construct(
         protected RansackConfig $config,
-        protected QueryBuilderManger $qbManager,
-        protected string $modelName,
+        protected QueryBuilderHelper $qbHelper,
+        protected string $entityName,
         protected string $alias = 't',
     )
     {
@@ -24,15 +25,15 @@ class RansackFilter
     /**
      * @throws RansackException
      */
-    public function apply(RansackParamsVO $paramsVO): QueryBuilderManger
+    public function apply(RansackParamsVO $paramsVO): QueryBuilderHelper
     {
         foreach ($this->where($paramsVO->where) as $filter) {
-            $this->qbManager->getQueryBuilder()->andWhere($filter);
+            $this->qbHelper->getQueryBuilder()->andWhere($filter);
         }
         $this->groupBy($paramsVO->groupBy);
         $this->orderBy($paramsVO->orderBy);
 
-        return $this->qbManager;
+        return $this->qbHelper;
     }
 
     /**
@@ -40,7 +41,7 @@ class RansackFilter
      */
     protected function where(array $where): array
     {
-        $qb = $this->qbManager->getQueryBuilder();
+        $qb = $this->qbHelper->getQueryBuilder();
         $filters = [];
         foreach ($where as $k => $v) {
             if (!$this->isBlank($v) || preg_match('/_null$/', $k)) {
@@ -66,7 +67,7 @@ class RansackFilter
             $paramFilterVO = new ParamFilterVO();
             $paramFilterVO->key = $key;
             $paramFilterVO->exprName = GroupByExpr::NAME;
-            $this->filter($this->modelName, $paramFilterVO);
+            $this->filter($this->entityName, $paramFilterVO);
         }
     }
 
@@ -82,7 +83,7 @@ class RansackFilter
             $paramFilterVO->key = $vo->field;
             $paramFilterVO->value = $vo->order;
             $paramFilterVO->exprName = OrderByExpr::NAME;
-            $this->filter($this->modelName, $paramFilterVO);
+            $this->filter($this->entityName, $paramFilterVO);
         }
     }
 
@@ -91,59 +92,58 @@ class RansackFilter
      */
     protected function parseFilter(string $filterKey, $filterValue)
     {
-        $paramFilterVO = $this->config->getParamFilterParser()->parse($filterKey, $filterValue);
+        $paramFilterVO = $this->config->getParamExprParser()->parse($filterKey, $filterValue);
         $keys = explode('_or_', $paramFilterVO->key);
         if (count($keys) > 1) {
             $args = [];
             foreach ($keys as $key) {
                 $vo = new ParamFilterVO($paramFilterVO->toArray());
                 $vo->key = $key;
-                $args[] = $this->filter($this->modelName, $vo);
+                $args[] = $this->filter($this->entityName, $vo);
             }
 
-            return call_user_func_array([$this->qbManager->getQueryBuilder()->expr(), 'orX'], $args);
+            return call_user_func_array([$this->qbHelper->getQueryBuilder()->expr(), 'orX'], $args);
         }
 
-        return $this->filter($this->modelName, $paramFilterVO);
+        return $this->filter($this->entityName, $paramFilterVO);
     }
 
     /**
      * @throws RansackException
      */
-    protected function filter(string $modelName, ParamFilterVO $vo)
+    protected function filter(string $entityName, ParamFilterVO $vo)
     {
-        if ($field = $this->getField($modelName, $vo->key)) {
+        if ($field = $this->config->getEntityHelper()->getField($entityName, $vo->key)) {
             $vo->key = $field;
-            $type = $this->getTypeOfField($modelName, $field);
+            $type = $this->config->getEntityHelper()->getTypeOfField($entityName, $field);
 
             return $this->createExpr($this->alias, $vo, $type);
         } else {
-            return $this->filtersFks($modelName, $vo);
+            return $this->filtersRelations($entityName, $vo);
         }
     }
 
     /**
      * @throws RansackException
      */
-    protected function filtersFks(string $modelName, ParamFilterVO $vo)
+    protected function filtersRelations(string $entityName, ParamFilterVO $vo)
     {
-        $qb = $this->qbManager->getQueryBuilder();
         $alias = $this->alias;
-        $filterFk = $this->config->getFilterFkManager()->extract($qb, $modelName, $alias, $vo);
-        foreach ($filterFk->fks as $fk) {
-            $join = $fk->join;
-            $this->qbManager->tryLeftJoin(
+        $filterRelationVO = $this->config->getExprRelationManager()->extract($entityName, $alias, $vo);
+        foreach ($filterRelationVO->relations as $relationVO) {
+            $join = $relationVO->join;
+            $this->qbHelper->tryLeftJoin(
                 $join->join,
                 $join->alias,
                 $join->conditionType,
                 $join->condition,
                 $join->indexBy,
             );
-            $alias .= "_$fk->fieldName";
+            $alias .= "_$relationVO->fieldName";
         }
-        $vo->key = $filterFk->field;
+        $vo->key = $filterRelationVO->field;
 
-        return $this->createExpr($alias, $vo, $filterFk->type);
+        return $this->createExpr($alias, $vo, $filterRelationVO->type);
     }
 
     /**
@@ -157,29 +157,7 @@ class RansackFilter
         $filterVO->value = $paramVO->value;
         $expr = $this->config->getExprFactory()->get($paramVO->exprName);
 
-        return $expr->create($this->qbManager->getQueryBuilder(), $filterVO);
-    }
-
-    protected function getField(string $modelName, string $field): ?string
-    {
-        $classMetadata = $this->qbManager
-            ->getQueryBuilder()
-            ->getEntityManager()
-            ->getClassMetadata($modelName);
-        if ($classMetadata->hasField($field)) {
-            return $classMetadata->getFieldName($field);
-        }
-
-        return null;
-    }
-
-    protected function getTypeOfField(string $modelName, string $field): ?string
-    {
-        return $this->qbManager
-            ->getQueryBuilder()
-            ->getEntityManager()
-            ->getClassMetadata($modelName)
-            ->getTypeOfField($field);
+        return $expr->create($this->qbHelper->getQueryBuilder(), $filterVO);
     }
 
     protected function isBlank($value): bool
