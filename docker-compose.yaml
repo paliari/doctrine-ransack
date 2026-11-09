@@ -4,6 +4,12 @@ x-php: &php
   working_dir: /var/www/html
   command: vendor/bin/phpunit
 
+x-orm3: &orm3
+  environment:
+    COMPOSER: composer.orm3.json
+    COMPOSER_VENDOR_DIR: vendor-orm3
+  command: vendor-orm3/bin/phpunit
+
 services:
   php82:
     <<: *php
@@ -16,4 +22,10 @@ services:
     image: paliari/apache-php8:2.4.0-dev
   php85:
     <<: *php
+    image: paliari/apache-php8:2.5.0-dev-pcov
+  php82-orm3:
+    <<: [*orm3, *php]
+    image: paliari/apache-php8:2.2.3-dev
+  php85-orm3:
+    <<: [*orm3, *php]
     image: paliari/apache-php8:2.5.0-dev-pcov
