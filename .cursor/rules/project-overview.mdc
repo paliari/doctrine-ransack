@@ -8,7 +8,8 @@ alwaysApply: true
 Biblioteca PHP (`paliari/doctrine-ransack`) de busca avançada para Doctrine ORM, inspirada no Ransack do Rails.
 Converte arrays de filtros (`['person.name_cont' => 'Jhon']`) em DQL via `QueryBuilder`.
 
-- PHP `>=8.2` (testado de 8.2 a 8.5), `doctrine/orm ^2.8`, `paliari/php-utils ^2.0.2`.
+- PHP `>=8.2` (testado de 8.2 a 8.5), `doctrine/orm ^2.8 || ^3.3` (DBAL 3 no ORM 2, DBAL 4 no ORM 3),
+  `paliari/php-utils ^2.0.2`.
   Namespace `Paliari\Doctrine\` → `src/` (PSR-4).
 - É uma **lib pública**: preserve a API pública (`Ransack`, `RansackConfig`, `RansackBuilder`,
   `CustomAssociationInterface`, VOs em `src/VO`). Mudanças quebrando compatibilidade exigem major bump.
@@ -35,17 +36,22 @@ Converte arrays de filtros (`['person.name_cont' => 'Jhon']`) em DQL via `QueryB
 
 ## Comandos
 
-Um serviço por versão de PHP no `docker-compose.yaml` (`php82`, `php83`, `php84`, `php85`).
-O lock é resolvido para a plataforma PHP 8.2 (`config.platform.php`), então serve para todas.
+Um serviço por versão de PHP no `docker-compose.yaml` (`php82`, `php83`, `php84`, `php85`) com ORM 2
+(`composer.json`/`composer.lock`, `vendor/`). Os serviços `php82-orm3` e `php85-orm3` usam ORM 3 + DBAL 4
+(`composer.orm3.json`/`composer.orm3.lock`, `vendor-orm3/`). Os locks são resolvidos para a plataforma
+PHP 8.2 (`config.platform.php`). Ao mudar dependências, atualize os dois arquivos composer.
 
 ```bash
 docker compose run --rm php82 composer install
-docker compose run --rm php85                                   # suíte completa
+docker compose run --rm php82-orm3 composer install
+docker compose run --rm php85                                   # suíte completa (ORM 2)
+docker compose run --rm php85-orm3                              # suíte completa (ORM 3)
 docker compose run --rm php85 vendor/bin/phpunit --testsuite Unit   # ou Functional
-docker compose run --rm php85 vendor/bin/phpunit --coverage-text    # pcov só na imagem php85
+docker compose run --rm php85 vendor/bin/phpunit --coverage-text    # pcov só nas imagens php85
 ```
 
-Antes de liberar versão, rode a suíte nas quatro versões.
+Antes de liberar versão, rode as seis combinações. A cobertura de 100% vale para a união das duas séries
+(ramos específicos de versão do ORM só rodam em uma delas).
 
 ## Commits
 

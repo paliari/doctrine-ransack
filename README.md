@@ -2,7 +2,7 @@
 #### Requirements
 
 - PHP >= 8.2 (tested on 8.2, 8.3, 8.4 and 8.5)
-- Doctrine ORM ^2.8
+- Doctrine ORM ^2.8 or ^3.3 (tested on 2.20 with DBAL 3, and 3.7 with DBAL 4)
 
 #### Installation
 	
@@ -93,7 +93,7 @@ class CustomAssociation implements CustomAssociationInterface
             $joinVO = new JoinVO();
             $joinVO->join = Person::class;
             $joinVO->alias = "{$alias}_$field";
-            $joinVO->conditionType = Join::WITH;
+            $joinVO->conditionType = Join::WITH; // Join::ON on doctrine/orm 3.6+
             $joinVO->condition = "$alias.email = $joinVO->alias.email";
             $relationVO->join = $joinVO;
 
@@ -104,6 +104,10 @@ class CustomAssociation implements CustomAssociationInterface
     }
 }
 ```
+
+For joins on an entity without association (like above), doctrine/orm 3.6+ deprecates `Join::WITH`
+in favor of `Join::ON`, while doctrine/orm 2.x only understands `Join::WITH`. Pick the one for your version.
+
 Setup with CustomAssociation
 ```php
 <?php
@@ -448,12 +452,17 @@ $paramsVO->orderBy = [new RansackOrderByVO(['field' => 'id', 'order' => RansackO
 
 ## Running tests
 
-Each PHP version has a service in `docker-compose.yaml` (`php82`, `php83`, `php84`, `php85`):
+Each PHP version has a service in `docker-compose.yaml` (`php82`, `php83`, `php84`, `php85`), using
+doctrine/orm 2.x (`composer.json`). The `*-orm3` services (`php82-orm3`, `php85-orm3`) use doctrine/orm 3.x
+and DBAL 4 (`composer.orm3.json`, installed in `vendor-orm3/`):
 
 ```bash
 docker compose run --rm php82 composer install
 docker compose run --rm php85
 docker compose run --rm php85 vendor/bin/phpunit --testsuite Unit
+
+docker compose run --rm php82-orm3 composer install
+docker compose run --rm php85-orm3
 ```
 
 ## Authors
