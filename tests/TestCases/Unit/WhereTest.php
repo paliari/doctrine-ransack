@@ -384,10 +384,194 @@ class WhereTest extends TestCase
         $this->newRansackBuilder($where);
     }
 
-    protected function newRansackBuilder(array $where): RansackBuilder
+    public function testThrowPointFieldNotFound()
+    {
+        $this->expectException(RansackException::class);
+        $this->expectExceptionMessage("Field 'person.xyz' not found!");
+        $this->newRansackBuilder(['person.xyz_eq' => 1]);
+    }
+
+    public function testThrowRelationFieldNotFoundUnderline()
+    {
+        $this->expectException(RansackException::class);
+        $this->expectExceptionMessage("Field 'person_xyz' not found!");
+        $this->newRansackBuilder(['person_xyz_eq' => 1]);
+    }
+
+    public function testThrowUnknownPredicate()
+    {
+        $this->expectException(RansackException::class);
+        $this->expectExceptionMessage("Condition 'email_foo' not found!");
+        $this->newRansackBuilder(['email_foo' => 1]);
+    }
+
+    public function testThrowKeyWithoutPredicate()
+    {
+        $this->expectException(RansackException::class);
+        $this->expectExceptionMessage("Condition 'email' not found!");
+        $this->newRansackBuilder(['email' => 1]);
+    }
+
+    public function testRepeatedFieldAndPredicateUseDistinctParameters()
+    {
+        $where = [
+            'email_eq' => $this->faker->unique()->email(),
+            'or' => [
+                'email_eq' => $this->faker->unique()->email(),
+                'password_eq' => $this->faker->password(),
+            ],
+        ];
+        $rb = $this->newRansackBuilder($where);
+        $qb = $rb->getQueryBuilder();
+        $expectedDql = 'SELECT t FROM User t WHERE t.email = :t_email_eq AND (t.email = :t_email_eq_1 OR t.password = :t_password_eq)';
+        $this->assertEquals($expectedDql, $qb->getDQL());
+        $this->assertEquals($where['email_eq'], $qb->getParameter('t_email_eq')->getValue());
+        $this->assertEquals($where['or']['email_eq'], $qb->getParameter('t_email_eq_1')->getValue());
+        $this->assertEquals($where['or']['password_eq'], $qb->getParameter('t_password_eq')->getValue());
+    }
+
+    public function testRepeatedFieldInOrKey()
+    {
+        $rb = $this->newRansackBuilder(['email_or_email_eq' => 'a@a.com']);
+        $expectedDql = 'SELECT t FROM User t WHERE t.email = :t_email_eq OR t.email = :t_email_eq_1';
+        $this->assertEquals($expectedDql, $rb->getQueryBuilder()->getDQL());
+        $this->assertCount(2, $rb->getQueryBuilder()->getParameters());
+    }
+
+    public function testRepeatedBetweenUseDistinctParameters()
+    {
+        $where = [
+            'person_id_between' => [1, 10],
+            'or' => ['person_id_between' => [20, 30], 'email_null' => null],
+        ];
+        $rb = $this->newRansackBuilder($where);
+        $qb = $rb->getQueryBuilder();
+        $expectedDql = 'SELECT t FROM User t WHERE (t.person_id BETWEEN :t_person_id_between_x AND :t_person_id_between_y)'
+            . ' AND ((t.person_id BETWEEN :t_person_id_between_1_x AND :t_person_id_between_1_y) OR t.email IS NULL)';
+        $this->assertEquals($expectedDql, $qb->getDQL());
+        $this->assertEquals(1, $qb->getParameter('t_person_id_between_x')->getValue());
+        $this->assertEquals(10, $qb->getParameter('t_person_id_between_y')->getValue());
+        $this->assertEquals(20, $qb->getParameter('t_person_id_between_1_x')->getValue());
+        $this->assertEquals(30, $qb->getParameter('t_person_id_between_1_y')->getValue());
+    }
+
+    public function testBlankValuesAreIgnored()
+    {
+        $where = [
+            'email_eq' => '',
+            'password_eq' => null,
+            'person_id_in' => [],
+            'or' => [],
+        ];
+        $rb = $this->newRansackBuilder($where);
+        $this->assertEquals('SELECT t FROM User t', $rb->getQueryBuilder()->getDQL());
+        $this->assertCount(0, $rb->getQueryBuilder()->getParameters());
+    }
+
+    public function testZeroIsNotBlank()
+    {
+        $rb = $this->newRansackBuilder(['person_id_eq' => '0']);
+        $this->assertEquals('SELECT t FROM User t WHERE t.person_id = :t_person_id_eq', $rb->getQueryBuilder()->getDQL());
+        $this->assertEquals('0', $rb->getQueryBuilder()->getParameter('t_person_id_eq')->getValue());
+    }
+
+    public function testOrWithOnlyBlankValuesIsIgnored()
+    {
+        $email = $this->faker->email();
+        $where = [
+            'email_eq' => $email,
+            'or' => ['password_eq' => '', 'person_id_eq' => null],
+        ];
+        $rb = $this->newRansackBuilder($where);
+        $this->assertEquals('SELECT t FROM User t WHERE t.email = :t_email_eq', $rb->getQueryBuilder()->getDQL());
+        $this->assertStringEndsWith('WHERE u0_.email = ?', $rb->getQuery()->getSQL());
+    }
+
+    public function testNotNullWithNullValue()
+    {
+        $rb = $this->newRansackBuilder(['person_id_not_null' => null]);
+        $this->assertEquals('SELECT t FROM User t WHERE t.person_id IS NOT NULL', $rb->getQueryBuilder()->getDQL());
+    }
+
+    public function testInWithScalarValue()
+    {
+        $id = $this->faker->numberBetween(1, 100);
+        $rb = $this->newRansackBuilder(['person_id_in' => $id]);
+        $this->assertEquals('SELECT t FROM User t WHERE t.person_id IN(:t_person_id_in)', $rb->getQueryBuilder()->getDQL());
+        $this->assertEquals([$id], $rb->getQueryBuilder()->getParameter('t_person_id_in')->getValue());
+    }
+
+    public function testNestedOrAnd()
+    {
+        $where = [
+            'email_cont' => 'a',
+            'or' => [
+                'person.name_start' => 'J',
+                'and' => [
+                    'person.address.city_eq' => 'M',
+                    'person.address.street_eq' => 'S',
+                ],
+            ],
+        ];
+        $rb = $this->newRansackBuilder($where);
+        $expectedDql = 'SELECT t FROM User t LEFT JOIN t.person t_person LEFT JOIN t_person.address t_person_address'
+            . ' WHERE t.email LIKE :t_email_cont AND (t_person.name LIKE :t_person_name_start'
+            . ' OR (t_person_address.city = :t_person_address_city_eq AND t_person_address.street = :t_person_address_street_eq))';
+        $this->assertEquals($expectedDql, $rb->getQueryBuilder()->getDQL());
+    }
+
+    public function testPointThreeLevels()
+    {
+        $city = $this->faker->city();
+        $rb = $this->newRansackBuilder(['person.address.city_eq' => $city]);
+        $expectedDql = 'SELECT t FROM User t LEFT JOIN t.person t_person LEFT JOIN t_person.address t_person_address WHERE t_person_address.city = :t_person_address_city_eq';
+        $this->assertEquals($expectedDql, $rb->getQueryBuilder()->getDQL());
+        $this->assertEquals($city, $rb->getQueryBuilder()->getParameter('t_person_address_city_eq')->getValue());
+    }
+
+    public function testOrKeyWithPointResolvesEachFieldFromRoot()
+    {
+        $rb = $this->newRansackBuilder(['person.name_or_email_cont' => 'x']);
+        $expectedDql = 'SELECT t FROM User t LEFT JOIN t.person t_person WHERE t_person.name LIKE :t_person_name_cont OR t.email LIKE :t_email_cont';
+        $this->assertEquals($expectedDql, $rb->getQueryBuilder()->getDQL());
+    }
+
+    public function testCustomAlias()
+    {
+        $where = [
+            'person.address.city_eq' => $this->faker->city(),
+            'person_name_eq' => $this->faker->name(),
+        ];
+        $rb = $this->newRansackBuilder($where, 'u');
+        $expectedDql = 'SELECT u FROM User u LEFT JOIN u.person u_person LEFT JOIN u_person.address u_person_address'
+            . ' WHERE u_person_address.city = :u_person_address_city_eq AND u_person.name = :u_person_name_eq';
+        $this->assertEquals($expectedDql, $rb->getQueryBuilder()->getDQL());
+        $this->assertEquals($where['person_name_eq'], $rb->getQueryBuilder()->getParameter('u_person_name_eq')->getValue());
+    }
+
+    public function testOrderByDirectionIsCaseInsensitive()
+    {
+        $rb = $this->newRansackBuilder(['id_order_by' => 'asc', 'email_order_by' => 'Desc']);
+        $this->assertEquals('SELECT t FROM User t ORDER BY t.id asc, t.email Desc', $rb->getQueryBuilder()->getDQL());
+    }
+
+    public function testThrowOrderByInvalidDirection()
+    {
+        $this->expectException(RansackException::class);
+        $this->expectExceptionMessage("Order direction 'ASC, t.password DESC' is invalid!");
+        $this->newRansackBuilder(['id_order_by' => 'ASC, t.password DESC']);
+    }
+
+    public function testThrowOrderByNonStringDirection()
+    {
+        $this->expectException(RansackException::class);
+        $this->expectExceptionMessage("Order direction 'array' is invalid!");
+        $this->newRansackBuilder(['id_order_by' => ['ASC']]);
+    }
+
+    protected function newRansackBuilder(array $where, string $alias = 't'): RansackBuilder
     {
         $entityName = User::class;
-        $alias = 't';
         $qb = EM::getEm()->createQueryBuilder()->from($entityName, $alias);
         $paramsVO = new RansackParamsVO();
         $paramsVO->where = $where;

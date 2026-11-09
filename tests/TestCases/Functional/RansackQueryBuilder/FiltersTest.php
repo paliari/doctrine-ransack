@@ -50,6 +50,50 @@ class FiltersTest extends BaseTestFunctional
         $this->assertEquals($user1, $res[0]);
     }
 
+    public function testPredicatesOnDatabase()
+    {
+        $person1 = $this->personFactory->create(['name' => 'Ana Silva']);
+        $person2 = $this->personFactory->create(['name' => 'Bruno Souza']);
+        $person3 = $this->personFactory->create(['name' => 'Carla Silva']);
+        $user1 = $this->userFactory->create([], $person1);
+        $user2 = $this->userFactory->create([], $person2);
+        $user3 = $this->userFactory->create([], $person3);
+        $user4 = $this->userFactory->create();
+
+        $this->assertEquals([$user1->id, $user3->id], $this->searchIds(User::class, ['person_id_in' => [$person1->id, $person3->id]]));
+        $this->assertEquals([$user2->id, $user3->id], $this->searchIds(User::class, ['person_id_not_in' => [$person1->id]]));
+        $this->assertEquals([$user4->id], $this->searchIds(User::class, ['person_id_null' => null]));
+        $this->assertEquals([$user1->id, $user2->id, $user3->id], $this->searchIds(User::class, ['person_id_not_null' => null]));
+        $this->assertEquals([$user2->id, $user3->id], $this->searchIds(User::class, ['id_between' => [$user2->id, $user3->id]]));
+        $this->assertEquals([$user1->id], $this->searchIds(User::class, ['id_lt' => $user2->id]));
+        $this->assertEquals([$user1->id, $user2->id], $this->searchIds(User::class, ['id_lteq' => $user2->id]));
+        $this->assertEquals([$user4->id], $this->searchIds(User::class, ['id_gt' => $user3->id]));
+        $this->assertEquals([$user3->id, $user4->id], $this->searchIds(User::class, ['id_gteq' => $user3->id]));
+        $this->assertEquals([$user1->id, $user3->id], $this->searchIds(User::class, ['person_name_cont' => 'Silva']));
+        $this->assertEquals([$user2->id], $this->searchIds(User::class, ['person_name_not_cont' => 'Silva']));
+        $this->assertEquals([$user2->id], $this->searchIds(User::class, ['person_name_start' => 'Bru']));
+        $this->assertEquals([$user1->id, $user3->id], $this->searchIds(User::class, ['person_name_not_start' => 'Bru']));
+        $this->assertEquals([$user1->id, $user3->id], $this->searchIds(User::class, ['person_name_end' => 'Silva']));
+        $this->assertEquals([$user2->id], $this->searchIds(User::class, ['person_name_not_end' => 'Silva']));
+        $this->assertEquals([$user3->id], $this->searchIds(User::class, ['person_name_matches' => 'C%']));
+        $this->assertEquals([$user1->id, $user2->id], $this->searchIds(User::class, ['person_name_not_matches' => 'C%']));
+    }
+
+    public function testRepeatedFieldAndPredicateOnDatabase()
+    {
+        $person1 = $this->personFactory->create(['name' => 'Ana Silva']);
+        $user1 = $this->userFactory->create([], $person1);
+        $user2 = $this->userFactory->create();
+        $where = [
+            'email_eq' => $user1->email,
+            'or' => [
+                'email_eq' => $user2->email,
+                'person_name_eq' => 'Ana Silva',
+            ],
+        ];
+        $this->assertEquals([$user1->id], $this->searchIds(User::class, $where));
+    }
+
     public function testPresentBlank()
     {
         $entityName = \Address::class;

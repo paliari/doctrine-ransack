@@ -36,6 +36,7 @@ class Db
             'CREATE INDEX ix_person_address ON people (address_id)',
             'CREATE TABLE users ( id INTEGER PRIMARY KEY ASC, email TEXT, password TEXT, person_id INTEGER)',
             'CREATE INDEX ix_user_person ON users (person_id)',
+            'CREATE TABLE events ( id INTEGER PRIMARY KEY ASC, name TEXT, starts_at DATETIME, active BOOLEAN)',
         ];
         foreach ($sqls as $sql) {
             $em->getConnection()->executeStatement($sql);

@@ -2,6 +2,7 @@
 
 namespace Tests\TestCases\Unit;
 
+use Paliari\Doctrine\Exceptions\RansackException;
 use Paliari\Doctrine\Ransack;
 use Paliari\Doctrine\RansackBuilder;
 use Paliari\Doctrine\RansackConfig;
@@ -69,6 +70,44 @@ class RansackTest extends TestCase
         $expectedDql = 'SELECT t FROM User t LEFT JOIN t.person t_person GROUP BY t_person.name, t_person.address_id';
         $dql = $rb->getQueryBuilder()->getDQL();
         $this->assertEquals($expectedDql, $dql);
+    }
+
+    public function testOrderByVOLowercaseDirection()
+    {
+        $paramsVO = new RansackParamsVO();
+        $paramsVO->orderBy = [new RansackOrderByVO(['field' => 'email', 'order' => 'desc'])];
+        $rb = $this->newRansackBuilder($paramsVO);
+        $this->assertEquals('SELECT t FROM User t ORDER BY t.email desc', $rb->getQueryBuilder()->getDQL());
+    }
+
+    public function testOrderByVODefaultDirection()
+    {
+        $paramsVO = new RansackParamsVO();
+        $paramsVO->orderBy = [new RansackOrderByVO(['field' => 'email'])];
+        $rb = $this->newRansackBuilder($paramsVO);
+        $this->assertEquals('SELECT t FROM User t ORDER BY t.email ASC', $rb->getQueryBuilder()->getDQL());
+    }
+
+    public function testThrowOrderByVOInvalidDirection()
+    {
+        $this->expectException(RansackException::class);
+        $this->expectExceptionMessage("Order direction 'DESC, t.password' is invalid!");
+        $paramsVO = new RansackParamsVO();
+        $paramsVO->orderBy = [new RansackOrderByVO(['field' => 'email', 'order' => 'DESC, t.password'])];
+        $this->newRansackBuilder($paramsVO);
+    }
+
+    public function testWhereCalledTwiceKeepsBothValues()
+    {
+        $first = new RansackParamsVO();
+        $first->where = ['email_eq' => 'a@a.com'];
+        $second = new RansackParamsVO();
+        $second->where = ['email_eq' => 'b@b.com'];
+        $qb = EM::getEm()->createQueryBuilder()->from(User::class, 't');
+        $rb = $this->ransack->query($qb, User::class, 't')->where($first)->where($second)->includes();
+        $this->assertEquals('SELECT t FROM User t WHERE t.email = :t_email_eq AND t.email = :t_email_eq_1', $rb->getQueryBuilder()->getDQL());
+        $this->assertEquals('a@a.com', $rb->getQueryBuilder()->getParameter('t_email_eq')->getValue());
+        $this->assertEquals('b@b.com', $rb->getQueryBuilder()->getParameter('t_email_eq_1')->getValue());
     }
 
     protected function newRansackBuilder(RansackParamsVO $paramsVO): RansackBuilder

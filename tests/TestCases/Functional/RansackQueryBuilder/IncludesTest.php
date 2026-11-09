@@ -63,6 +63,36 @@ class IncludesTest extends BaseTestFunctional
         }
     }
 
+    public function testWhereAndIncludesSameRelationJoinOnce()
+    {
+        $person1 = $this->personFactory->create(['name' => 'Ana Silva']);
+        $person2 = $this->personFactory->create(['name' => 'Bruno Souza']);
+        $user1 = $this->userFactory->create([], $person1);
+        $this->userFactory->create([], $person2);
+        $paramsVO = new RansackParamsVO();
+        $paramsVO->where = ['person.name_cont' => 'Silva'];
+        $includes = [
+            'only' => ['email'],
+            'include' => ['person' => ['only' => ['name']]],
+        ];
+        $qb = EM::getEm()->createQueryBuilder()->from(User::class, 't');
+        $rb = $this->ransack->query($qb, User::class, 't')
+            ->includes()
+            ->where($paramsVO)
+            ->includes($includes);
+        $expectedDql = 'SELECT partial t.{id, email}, partial t_person.{id, name} FROM User t'
+            . ' LEFT JOIN t.person t_person WHERE t_person.name LIKE :t_person_name_cont';
+        $this->assertEquals($expectedDql, $rb->getQueryBuilder()->getDQL());
+        $expected = [
+            [
+                'id' => $user1->id,
+                'email' => $user1->email,
+                'person' => ['id' => $person1->id, 'name' => $person1->name],
+            ],
+        ];
+        $this->assertEquals($expected, $rb->getQuery()->getArrayResult());
+    }
+
     public function testIncludesRansackException()
     {
         $this->expectException(RansackException::class);
