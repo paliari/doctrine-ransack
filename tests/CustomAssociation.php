@@ -2,6 +2,7 @@
 
 namespace Tests;
 
+use Doctrine\ORM\Query\Expr\Join;
 use Paliari\Doctrine\CustomAssociationInterface;
 use Paliari\Doctrine\VO\JoinVO;
 use Paliari\Doctrine\VO\RelationVO;
@@ -20,7 +21,7 @@ class CustomAssociation implements CustomAssociationInterface
             $joinVO = new JoinVO();
             $joinVO->join = Person::class;
             $joinVO->alias = "{$alias}_$field";
-            $joinVO->conditionType = OrmCompat::arbitraryJoinConditionType();
+            $joinVO->conditionType = Join::ON;
             $joinVO->condition = "$alias.email = $joinVO->alias.email";
             $relationVO->join = $joinVO;
 

@@ -9,9 +9,9 @@ use Paliari\Doctrine\Ransack;
 use Paliari\Doctrine\RansackBuilder;
 use Paliari\Doctrine\RansackConfig;
 use Paliari\Doctrine\VO\RansackParamsVO;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Tests\EM;
-use Tests\OrmCompat;
 use User;
 
 class WhereTest extends TestCase
@@ -456,6 +456,32 @@ class WhereTest extends TestCase
         $this->assertEquals(30, $qb->getParameter('t_person_id_between_1_y')->getValue());
     }
 
+    public function testBetweenWithAssociativeArray()
+    {
+        $rb = $this->newRansackBuilder(['person_id_between' => ['from' => 5, 'to' => 9]]);
+        $qb = $rb->getQueryBuilder();
+        $this->assertEquals('SELECT t FROM User t WHERE t.person_id BETWEEN :t_person_id_between_x AND :t_person_id_between_y', $qb->getDQL());
+        $this->assertEquals(5, $qb->getParameter('t_person_id_between_x')->getValue());
+        $this->assertEquals(9, $qb->getParameter('t_person_id_between_y')->getValue());
+    }
+
+    public static function invalidBetweenValues(): array
+    {
+        return [
+            'scalar' => [5, 1],
+            'one value' => [[5], 1],
+            'three values' => [[1, 2, 3], 3],
+        ];
+    }
+
+    #[DataProvider('invalidBetweenValues')]
+    public function testThrowBetweenWithoutTwoValues(mixed $value, int $count)
+    {
+        $this->expectException(RansackException::class);
+        $this->expectExceptionMessage("Between expects 2 values, got $count!");
+        $this->newRansackBuilder(['person_id_between' => $value]);
+    }
+
     public function testBlankValuesAreIgnored()
     {
         $where = [
@@ -553,8 +579,7 @@ class WhereTest extends TestCase
     public function testOrderByDirectionIsCaseInsensitive()
     {
         $rb = $this->newRansackBuilder(['id_order_by' => 'asc', 'email_order_by' => 'Desc']);
-        $expectedDql = 'SELECT t FROM User t ORDER BY t.id ' . OrmCompat::dqlOrderDirection('asc')
-            . ', t.email ' . OrmCompat::dqlOrderDirection('Desc');
+        $expectedDql = 'SELECT t FROM User t ORDER BY t.id ASC, t.email DESC';
         $this->assertEquals($expectedDql, $rb->getQueryBuilder()->getDQL());
     }
 

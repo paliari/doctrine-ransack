@@ -17,7 +17,7 @@ class Db
             'charset' => 'UTF8',
         ];
         $config = new Configuration();
-        $config->setMetadataDriverImpl(new AttributeDriver([__DIR__ . '/models'], true));
+        $config->setMetadataDriverImpl(new AttributeDriver([__DIR__ . '/models']));
         $config->setProxyDir(__DIR__ . '/../tmp/proxies');
         $config->setProxyNamespace('Proxies');
         $config->setAutoGenerateProxyClasses(true);

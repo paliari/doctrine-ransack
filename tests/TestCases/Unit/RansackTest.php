@@ -2,6 +2,7 @@
 
 namespace Tests\TestCases\Unit;
 
+use Doctrine\ORM\Decorator\EntityManagerDecorator;
 use Paliari\Doctrine\Exceptions\RansackException;
 use Paliari\Doctrine\Ransack;
 use Paliari\Doctrine\RansackBuilder;
@@ -10,7 +11,6 @@ use Paliari\Doctrine\VO\RansackOrderByVO;
 use Paliari\Doctrine\VO\RansackParamsVO;
 use PHPUnit\Framework\TestCase;
 use Tests\EM;
-use Tests\OrmCompat;
 use User;
 
 class RansackTest extends TestCase
@@ -78,7 +78,7 @@ class RansackTest extends TestCase
         $paramsVO = new RansackParamsVO();
         $paramsVO->orderBy = [new RansackOrderByVO(['field' => 'email', 'order' => 'desc'])];
         $rb = $this->newRansackBuilder($paramsVO);
-        $expectedDql = 'SELECT t FROM User t ORDER BY t.email ' . OrmCompat::dqlOrderDirection('desc');
+        $expectedDql = 'SELECT t FROM User t ORDER BY t.email DESC';
         $this->assertEquals($expectedDql, $rb->getQueryBuilder()->getDQL());
     }
 
@@ -110,6 +110,19 @@ class RansackTest extends TestCase
         $this->assertEquals('SELECT t FROM User t WHERE t.email = :t_email_eq AND t.email = :t_email_eq_1', $rb->getQueryBuilder()->getDQL());
         $this->assertEquals('a@a.com', $rb->getQueryBuilder()->getParameter('t_email_eq')->getValue());
         $this->assertEquals('b@b.com', $rb->getQueryBuilder()->getParameter('t_email_eq_1')->getValue());
+    }
+
+    public function testAcceptsEntityManagerDecorator()
+    {
+        $em = new class(EM::getEm()) extends EntityManagerDecorator {
+        };
+        $ransack = new Ransack(new RansackConfig($em));
+        $paramsVO = new RansackParamsVO();
+        $paramsVO->where = ['person.name_eq' => 'x'];
+        $qb = $em->createQueryBuilder()->from(User::class, 't');
+        $rb = $ransack->query($qb, User::class, 't')->where($paramsVO)->includes();
+        $expectedDql = 'SELECT t FROM User t LEFT JOIN t.person t_person WHERE t_person.name = :t_person_name_eq';
+        $this->assertEquals($expectedDql, $rb->getQueryBuilder()->getDQL());
     }
 
     protected function newRansackBuilder(RansackParamsVO $paramsVO): RansackBuilder
