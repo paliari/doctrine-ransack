@@ -2,7 +2,7 @@
 
 namespace Paliari\Doctrine;
 
-use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityManagerInterface;
 use JetBrains\PhpStorm\Pure;
 use Paliari\Doctrine\Expressions\ExprRelationManager;
 use Paliari\Doctrine\Expressions\ParamExprParser;
@@ -17,7 +17,7 @@ class RansackConfig
     protected EntityHelper $entityHelper;
 
     #[Pure]
-    public function __construct(protected EntityManager $em, ?CustomAssociationInterface $customAssociation = null)
+    public function __construct(protected EntityManagerInterface $em, ?CustomAssociationInterface $customAssociation = null)
     {
         $this->entityHelper = new EntityHelper($this->em, $customAssociation);
         $this->exprRelationManager = new ExprRelationManager($this->entityHelper);

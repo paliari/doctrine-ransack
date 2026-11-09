@@ -2,7 +2,7 @@
 
 namespace Paliari\Doctrine\Helpers;
 
-use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityManagerInterface;
 use Paliari\Doctrine\CustomAssociationInterface;
 use Paliari\Doctrine\VO\JoinVO;
 use Paliari\Doctrine\VO\RelationVO;
@@ -10,7 +10,7 @@ use Paliari\Doctrine\VO\RelationVO;
 class EntityHelper
 {
     public function __construct(
-        protected EntityManager $em,
+        protected EntityManagerInterface $em,
         protected ?CustomAssociationInterface $customAssociation = null,
     )
     {
