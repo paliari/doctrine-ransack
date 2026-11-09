@@ -16,7 +16,7 @@ class StartExpr extends AbstractExpr
 
     public function create(QueryBuilder $qb, FilterVO $vo): Comparison
     {
-        $key = $this->fieldKey($vo->field, static::NAME);
+        $key = $this->parameterKey($qb, $vo->field, static::NAME);
         $qb->setParameter($key, "$vo->value%", $vo->type);
 
         return $qb->expr()->like($vo->field, ":$key");
@@ -26,10 +26,15 @@ class StartExpr extends AbstractExpr
 
 ## Regras
 
-- Sempre use parâmetros nomeados via `fieldKey()` (`t_person.name` + `cont` → `:t_person_name_cont`);
+- Sempre use parâmetros nomeados via `parameterKey($qb, ...)` (`t_person.name` + `cont` → `:t_person_name_cont`);
   nunca concatene valores do usuário no DQL. Literais fixos (ex.: `"''"`) são permitidos.
+- `parameterKey` evita colisão quando o mesmo campo+predicado aparece de novo no QB
+  (`:t_email_eq`, depois `:t_email_eq_1`...). Não use `fieldKey()` direto para nomear parâmetros.
 - Passe `$vo->type` no `setParameter` para conversão correta de tipo do Doctrine.
-- Múltiplos parâmetros: sufixe a chave (`{key}_x`, `{key}_y`, como em `BetweenExpr`).
+- Múltiplos parâmetros: passe o sufixo para `parameterKey($qb, $vo->field, static::NAME, '_x')` e use
+  `{key}_x`, `{key}_y`, como em `BetweenExpr`.
+- Valores que entram no DQL sem parâmetro (ex.: direção do `order_by`) precisam ser validados contra
+  uma lista fechada e lançar `RansackException` se inválidos.
 - Retorne a expressão (`Comparison`, `Func`, `string`...) para ser combinada com `andWhere`/`orX`.
   Predicados que alteram o QB diretamente (`order_by`, `group_by`) retornam `null`.
 - Predicados sem valor (`null`, `present`, `blank`) ignoram `$vo->value`; o usuário passa `1`,

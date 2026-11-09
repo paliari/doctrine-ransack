@@ -11,7 +11,8 @@ alwaysApply: false
 - `phpunit.xml` falha com deprecation, warning, notice ou risky. O boot habilita `doctrine/deprecations`
   (`enableWithTriggerError`) e `<source ignoreSuppressionOfDeprecations="true">` faz as deprecations
   `@trigger_error` do Doctrine aparecerem. Não desligue isso para fazer teste passar.
-- Entidades de teste em `tests/models/` (namespace global: `User`, `Person`, `Address`), mapeadas com
+- Entidades de teste em `tests/models/` (namespace global: `User`, `Person`, `Address`, e `Event` para
+  tipos `datetime`/`boolean`), mapeadas com
   **attributes** (`#[ORM\Entity]`, `#[ORM\Column]`...). Ao adicionar entidade/coluna, atualize também `Db::migrate()`.
 - Arquivos terminam em `Test.php`; métodos `testXxx()`; namespace `Tests\TestCases\{Unit|Functional}\...`.
 - O projeto mantém cobertura completa de `src/`: todo código novo precisa de teste.
@@ -42,6 +43,9 @@ public function testStart()
   `$this->faker` e as factories).
 - Crie dados com `Tests\Factories\*Factory::create()` (usam named args: `person:`, `address:`)
   e verifique o resultado real (`getResult()` / `getArrayResult()`).
+- Para checar quais registros um filtro retorna, use `$this->searchIds(Entity::class, $where)`
+  (ids ordenados por `id`).
+- Toda correção de bug ganha teste de regressão que falha sem a correção.
 - Associações customizadas: use `Tests\CustomAssociation` com `new RansackConfig($em, new CustomAssociation())`.
 
 ## Dados

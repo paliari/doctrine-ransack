@@ -436,6 +436,16 @@ $where = [
       WHERE col BETWEEN 10 AND 20
       ```
 
+## Ordering
+
+Use `*_order_by` in `where` or `RansackOrderByVO` in `orderBy`. The direction must be `asc` or `desc`
+(case-insensitive); any other value throws `Paliari\Doctrine\Exceptions\RansackException`.
+
+```php
+$paramsVO->where = ['person.name_order_by' => 'asc'];
+$paramsVO->orderBy = [new RansackOrderByVO(['field' => 'id', 'order' => RansackOrderByVO::DESC])];
+```
+
 ## Running tests
 
 Each PHP version has a service in `docker-compose.yaml` (`php82`, `php83`, `php84`, `php85`):
