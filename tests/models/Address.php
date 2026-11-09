@@ -1,37 +1,25 @@
 <?php
 
-/**
- * @Entity
- * @Table(name="addresses")
- */
+use Doctrine\ORM\Mapping as ORM;
+
+#[ORM\Entity]
+#[ORM\Table(name: 'addresses')]
 class Address
 {
-    /**
-     * Primary Key column.
-     *
-     * @Id
-     * @GeneratedValue
-     * @Column(type="integer")
-     */
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column(type: 'integer')]
     public $id;
 
-    /**
-     * @Column(type="string", length=255)
-     */
+    #[ORM\Column(type: 'string', length: 255)]
     public $street = '';
 
-    /**
-     * @Column(type="string", length=255)
-     */
+    #[ORM\Column(type: 'string', length: 255)]
     public $neighborhood = '';
 
-    /**
-     * @Column(type="string", length=255)
-     */
+    #[ORM\Column(type: 'string', length: 255)]
     public $city = '';
 
-    /**
-     * @Column(type="string", length=255)
-     */
+    #[ORM\Column(type: 'string', length: 255)]
     public $number = '';
 }

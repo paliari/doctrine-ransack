@@ -2,8 +2,10 @@
 
 namespace Tests;
 
+use Doctrine\DBAL\DriverManager;
 use Doctrine\ORM\Configuration;
 use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\Mapping\Driver\AttributeDriver;
 
 class Db
 {
@@ -15,12 +17,11 @@ class Db
             'charset' => 'UTF8',
         ];
         $config = new Configuration();
-        $driverImpl = $config->newDefaultAnnotationDriver(__DIR__ . '/models');
-        $config->setMetadataDriverImpl($driverImpl);
+        $config->setMetadataDriverImpl(new AttributeDriver([__DIR__ . '/models'], true));
         $config->setProxyDir(__DIR__ . '/../tmp/proxies');
         $config->setProxyNamespace('Proxies');
         $config->setAutoGenerateProxyClasses(true);
-        $em = EntityManager::create($params, $config);
+        $em = new EntityManager(DriverManager::getConnection($params, $config), $config);
         static::migrate($em);
         EM::setEm($em);
 
@@ -37,7 +38,7 @@ class Db
             'CREATE INDEX ix_user_person ON users (person_id)',
         ];
         foreach ($sqls as $sql) {
-            $em->getConnection()->executeQuery($sql);
+            $em->getConnection()->executeStatement($sql);
         }
     }
 }

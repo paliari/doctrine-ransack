@@ -21,6 +21,6 @@ abstract class AbstractFactory
     protected function save($model)
     {
         $this->em->persist($model);
-        $this->em->flush($model);
+        $this->em->flush();
     }
 }

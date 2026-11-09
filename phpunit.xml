@@ -1,26 +1,33 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/5.5/phpunit.xsd"
+         xsi:noNamespaceSchemaLocation="vendor/phpunit/phpunit/phpunit.xsd"
          bootstrap="tests/boot.php"
+         cacheDirectory=".phpunit.cache"
          backupGlobals="false"
-         colors="true"
-         beStrictAboutCoversAnnotation="true"
          beStrictAboutOutputDuringTests="true"
          beStrictAboutTestsThatDoNotTestAnything="true"
-         beStrictAboutTodoAnnotatedTests="true"
-         verbose="true">
-    <testsuite name="all">
-        <directory suffix="Test.php">tests</directory>
-    </testsuite>
-    <testsuite name="Unit">
-        <directory suffix="Test.php">tests/TestCases/Unit</directory>
-    </testsuite>
-    <testsuite name="Functional">
-        <directory suffix="Test.php">tests/TestCases/Functional</directory>
-    </testsuite>
-    <filter>
-        <whitelist processUncoveredFilesFromWhitelist="true">
+         failOnDeprecation="true"
+         failOnPhpunitDeprecation="true"
+         failOnWarning="true"
+         failOnNotice="true"
+         failOnRisky="true"
+         displayDetailsOnTestsThatTriggerDeprecations="true"
+         displayDetailsOnTestsThatTriggerWarnings="true"
+         displayDetailsOnTestsThatTriggerNotices="true"
+         displayDetailsOnPhpunitDeprecations="true"
+         colors="true">
+    <testsuites>
+        <testsuite name="Unit">
+            <directory suffix="Test.php">tests/TestCases/Unit</directory>
+        </testsuite>
+        <testsuite name="Functional">
+            <directory suffix="Test.php">tests/TestCases/Functional</directory>
+        </testsuite>
+    </testsuites>
+
+    <source ignoreSuppressionOfDeprecations="true">
+        <include>
             <directory suffix=".php">src</directory>
-        </whitelist>
-    </filter>
+        </include>
+    </source>
 </phpunit>

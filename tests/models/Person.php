@@ -1,44 +1,30 @@
 <?php
 
-/**
- * @Entity
- * @Table(name="people")
- */
+use Doctrine\ORM\Mapping as ORM;
+
+#[ORM\Entity]
+#[ORM\Table(name: 'people')]
 class Person
 {
-    /**
-     * Primary Key column.
-     *
-     * @Id
-     * @GeneratedValue
-     * @Column(type="integer")
-     */
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column(type: 'integer')]
     public $id;
 
-    /**
-     * @Column(type="string", length=250)
-     */
+    #[ORM\Column(type: 'string', length: 250)]
     public $name = '';
 
-    /**
-     * @Column(type="string", length=255, unique=true)
-     */
+    #[ORM\Column(type: 'string', length: 255, unique: true)]
     public $email = '';
 
-    /**
-     * @Column(type="string", length=250)
-     */
+    #[ORM\Column(type: 'string', length: 250)]
     public $document = '';
 
-    /**
-     * @Column(type="integer", nullable=true)
-     */
+    #[ORM\Column(type: 'integer', nullable: true)]
     public $address_id;
 
-    /**
-     * @ManyToOne(targetEntity="Address")
-     * @JoinColumn(name="address_id", referencedColumnName="id")
-     */
+    #[ORM\ManyToOne(targetEntity: Address::class)]
+    #[ORM\JoinColumn(name: 'address_id', referencedColumnName: 'id')]
     private $address;
 
     /**

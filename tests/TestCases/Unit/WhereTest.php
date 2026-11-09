@@ -47,7 +47,7 @@ class WhereTest extends TestCase
     public function testCont()
     {
         $where = [
-            'person_name_cont' => $this->faker->name,
+            'person_name_cont' => $this->faker->name(),
         ];
         $rb = $this->newRansackBuilder($where);
         $expectedDql = 'SELECT t FROM User t LEFT JOIN t.person t_person WHERE t_person.name LIKE :t_person_name_cont';
@@ -60,7 +60,7 @@ class WhereTest extends TestCase
     public function testContWithOr()
     {
         $where = [
-            'person_name_or_person_document_cont' => $this->faker->name,
+            'person_name_or_person_document_cont' => $this->faker->name(),
         ];
         $rb = $this->newRansackBuilder($where);
         $expectedDql = 'SELECT t FROM User t LEFT JOIN t.person t_person WHERE t_person.name LIKE :t_person_name_cont OR t_person.document LIKE :t_person_document_cont';
@@ -74,7 +74,7 @@ class WhereTest extends TestCase
     public function testEnd()
     {
         $where = [
-            'person_name_end' => $this->faker->name,
+            'person_name_end' => $this->faker->name(),
         ];
         $rb = $this->newRansackBuilder($where);
         $expectedDql = 'SELECT t FROM User t LEFT JOIN t.person t_person WHERE t_person.name LIKE :t_person_name_end';
@@ -98,7 +98,7 @@ class WhereTest extends TestCase
     public function testEq()
     {
         $where = [
-            'person_name_eq' => $this->faker->name,
+            'person_name_eq' => $this->faker->name(),
         ];
         $rb = $this->newRansackBuilder($where);
         $expectedDql = 'SELECT t FROM User t LEFT JOIN t.person t_person WHERE t_person.name = :t_person_name_eq';
@@ -176,7 +176,7 @@ class WhereTest extends TestCase
     public function testMatches()
     {
         $where = [
-            'person_name_matches' => $this->faker->name,
+            'person_name_matches' => $this->faker->name(),
         ];
         $rb = $this->newRansackBuilder($where);
         $expectedDql = 'SELECT t FROM User t LEFT JOIN t.person t_person WHERE t_person.name LIKE :t_person_name_matches';
@@ -189,7 +189,7 @@ class WhereTest extends TestCase
     public function testNotCont()
     {
         $where = [
-            'person_name_not_cont' => $this->faker->name,
+            'person_name_not_cont' => $this->faker->name(),
         ];
         $rb = $this->newRansackBuilder($where);
         $expectedDql = 'SELECT t FROM User t LEFT JOIN t.person t_person WHERE t_person.name NOT LIKE :t_person_name_not_cont';
@@ -202,7 +202,7 @@ class WhereTest extends TestCase
     public function testNotEnd()
     {
         $where = [
-            'person_name_not_end' => $this->faker->name,
+            'person_name_not_end' => $this->faker->name(),
         ];
         $rb = $this->newRansackBuilder($where);
         $expectedDql = 'SELECT t FROM User t LEFT JOIN t.person t_person WHERE t_person.name NOT LIKE :t_person_name_not_end';
@@ -215,7 +215,7 @@ class WhereTest extends TestCase
     public function testNotEq()
     {
         $where = [
-            'person_name_not_eq' => $this->faker->name,
+            'person_name_not_eq' => $this->faker->name(),
         ];
         $rb = $this->newRansackBuilder($where);
         $expectedDql = 'SELECT t FROM User t LEFT JOIN t.person t_person WHERE t_person.name <> :t_person_name_not_eq';
@@ -241,7 +241,7 @@ class WhereTest extends TestCase
     public function testNotMatches()
     {
         $where = [
-            'person_name_not_matches' => $this->faker->name,
+            'person_name_not_matches' => $this->faker->name(),
         ];
         $rb = $this->newRansackBuilder($where);
         $expectedDql = 'SELECT t FROM User t LEFT JOIN t.person t_person WHERE t_person.name NOT LIKE :t_person_name_not_matches';
@@ -265,7 +265,7 @@ class WhereTest extends TestCase
     public function testNotStart()
     {
         $where = [
-            'person_name_not_start' => $this->faker->name,
+            'person_name_not_start' => $this->faker->name(),
         ];
         $rb = $this->newRansackBuilder($where);
         $expectedDql = 'SELECT t FROM User t LEFT JOIN t.person t_person WHERE t_person.name NOT LIKE :t_person_name_not_start';
@@ -300,7 +300,7 @@ class WhereTest extends TestCase
     public function testStart()
     {
         $where = [
-            'person_name_start' => $this->faker->name,
+            'person_name_start' => $this->faker->name(),
         ];
         $rb = $this->newRansackBuilder($where);
         $expectedDql = 'SELECT t FROM User t LEFT JOIN t.person t_person WHERE t_person.name LIKE :t_person_name_start';
@@ -335,9 +335,9 @@ class WhereTest extends TestCase
     public function testOr()
     {
         $where = [
-            'person.name_start' => $this->faker->name,
+            'person.name_start' => $this->faker->name(),
             'or' => [
-                'email_eq' => $this->faker->email,
+                'email_eq' => $this->faker->email(),
                 'person.document_eq' => $this->faker->cpf(),
             ],
         ];
@@ -353,9 +353,9 @@ class WhereTest extends TestCase
     public function testAnd()
     {
         $where = [
-            'person.name_start' => $this->faker->name,
+            'person.name_start' => $this->faker->name(),
             'and' => [
-                'email_eq' => $this->faker->email,
+                'email_eq' => $this->faker->email(),
                 'person.document_eq' => $this->faker->cpf(),
             ],
         ];

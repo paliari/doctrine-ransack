@@ -25,7 +25,7 @@ class CustomAssociationTest extends BaseTestFunctional
         $person1 = $this->personFactory->create([]);
         $person2 = $this->personFactory->create([]);
         $user1 = $this->userFactory->create([], $person1);
-        $user2 = $this->userFactory->create(['email' => $this->faker->email], $person2);
+        $user2 = $this->userFactory->create(['email' => $this->faker->email()], $person2);
         $paramsVO = new RansackParamsVO();
         $paramsVO->where = [
             'custom_email_eq' => $person1->email,

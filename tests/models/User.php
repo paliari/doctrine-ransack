@@ -1,39 +1,27 @@
 <?php
 
-/**
- * @Entity
- * @Table(name="users")
- */
+use Doctrine\ORM\Mapping as ORM;
+
+#[ORM\Entity]
+#[ORM\Table(name: 'users')]
 class User
 {
-    /**
-     * Primary Key column.
-     *
-     * @Id
-     * @GeneratedValue
-     * @Column(type="integer")
-     */
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column(type: 'integer')]
     public $id;
 
-    /**
-     * @Column(type="string", length=255, unique=true)
-     */
+    #[ORM\Column(type: 'string', length: 255, unique: true)]
     public $email = '';
 
-    /**
-     * @Column(type="string", length=40)
-     */
+    #[ORM\Column(type: 'string', length: 40)]
     public $password = '';
 
-    /**
-     * @Column(type="integer", nullable=true)
-     */
+    #[ORM\Column(type: 'integer', nullable: true)]
     public $person_id;
 
-    /**
-     * @ManyToOne(targetEntity="Person")
-     * @JoinColumn(name="person_id", referencedColumnName="id")
-     */
+    #[ORM\ManyToOne(targetEntity: Person::class)]
+    #[ORM\JoinColumn(name: 'person_id', referencedColumnName: 'id')]
     private $person;
 
     /**
