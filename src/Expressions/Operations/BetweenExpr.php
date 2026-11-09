@@ -11,7 +11,7 @@ class BetweenExpr extends AbstractExpr
 
     public function create(QueryBuilder $qb, FilterVO $vo): string
     {
-        $key = $this->fieldKey($vo->field, static::NAME);
+        $key = $this->parameterKey($qb, $vo->field, static::NAME, '_x');
         $keyX = "{$key}_x";
         $keyY = "{$key}_y";
         [$valueX, $valueY] = (array)$vo->value;

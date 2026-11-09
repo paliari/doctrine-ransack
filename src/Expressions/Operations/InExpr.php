@@ -12,7 +12,7 @@ class InExpr extends AbstractExpr
 
     public function create(QueryBuilder $qb, FilterVO $vo): Func
     {
-        $key = $this->fieldKey($vo->field, static::NAME);
+        $key = $this->parameterKey($qb, $vo->field, static::NAME);
         $conn = $qb->getEntityManager()->getConnection();
         $values = array_map(fn($v) => $conn->convertToDatabaseValue($v, $vo->type), (array)$vo->value);
         $qb->setParameter($key, $values);
