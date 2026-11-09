@@ -11,6 +11,7 @@ use Paliari\Doctrine\RansackConfig;
 use Paliari\Doctrine\VO\RansackParamsVO;
 use PHPUnit\Framework\TestCase;
 use Tests\EM;
+use Tests\OrmCompat;
 use User;
 
 class WhereTest extends TestCase
@@ -552,7 +553,9 @@ class WhereTest extends TestCase
     public function testOrderByDirectionIsCaseInsensitive()
     {
         $rb = $this->newRansackBuilder(['id_order_by' => 'asc', 'email_order_by' => 'Desc']);
-        $this->assertEquals('SELECT t FROM User t ORDER BY t.id asc, t.email Desc', $rb->getQueryBuilder()->getDQL());
+        $expectedDql = 'SELECT t FROM User t ORDER BY t.id ' . OrmCompat::dqlOrderDirection('asc')
+            . ', t.email ' . OrmCompat::dqlOrderDirection('Desc');
+        $this->assertEquals($expectedDql, $rb->getQueryBuilder()->getDQL());
     }
 
     public function testThrowOrderByInvalidDirection()

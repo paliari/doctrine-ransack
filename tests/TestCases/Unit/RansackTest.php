@@ -10,6 +10,7 @@ use Paliari\Doctrine\VO\RansackOrderByVO;
 use Paliari\Doctrine\VO\RansackParamsVO;
 use PHPUnit\Framework\TestCase;
 use Tests\EM;
+use Tests\OrmCompat;
 use User;
 
 class RansackTest extends TestCase
@@ -77,7 +78,8 @@ class RansackTest extends TestCase
         $paramsVO = new RansackParamsVO();
         $paramsVO->orderBy = [new RansackOrderByVO(['field' => 'email', 'order' => 'desc'])];
         $rb = $this->newRansackBuilder($paramsVO);
-        $this->assertEquals('SELECT t FROM User t ORDER BY t.email desc', $rb->getQueryBuilder()->getDQL());
+        $expectedDql = 'SELECT t FROM User t ORDER BY t.email ' . OrmCompat::dqlOrderDirection('desc');
+        $this->assertEquals($expectedDql, $rb->getQueryBuilder()->getDQL());
     }
 
     public function testOrderByVODefaultDirection()

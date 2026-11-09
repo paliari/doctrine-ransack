@@ -7,6 +7,7 @@ use Paliari\Doctrine\RansackConfig;
 use Paliari\Doctrine\VO\RansackParamsVO;
 use Tests\CustomAssociation;
 use Tests\EM;
+use Tests\OrmCompat;
 use Tests\TestCases\Functional\BaseTestFunctional;
 use User;
 
@@ -66,7 +67,8 @@ class CustomAssociationTest extends BaseTestFunctional
         $qb = $this->em->createQueryBuilder()->from(User::class, 't');
         $rb = $this->ransack->query($qb, User::class, 't')->where($paramsVO)->includes($includes);
         $expectedDql = 'SELECT partial t.{id, email}, partial t_custom.{id, name} FROM User t'
-            . ' LEFT JOIN Person t_custom WITH t.email = t_custom.email ORDER BY t.id asc';
+            . ' LEFT JOIN Person t_custom ' . OrmCompat::arbitraryJoinConditionType() . ' t.email = t_custom.email'
+            . ' ORDER BY t.id ' . OrmCompat::dqlOrderDirection('asc');
         $this->assertEquals($expectedDql, $rb->getQueryBuilder()->getDQL());
         $expected = [
             ['id' => $user1->id, 'email' => $user1->email],
