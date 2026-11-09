@@ -1,0 +1,19 @@
+x-php: &php
+  volumes:
+    - .:/var/www/html:cached
+  working_dir: /var/www/html
+  command: vendor/bin/phpunit
+
+services:
+  php82:
+    <<: *php
+    image: paliari/apache-php8:2.2.3-dev
+  php83:
+    <<: *php
+    image: paliari/apache-php8:2.3.1-dev
+  php84:
+    <<: *php
+    image: paliari/apache-php8:2.4.0-dev
+  php85:
+    <<: *php
+    image: paliari/apache-php8:2.5.0-dev-pcov
