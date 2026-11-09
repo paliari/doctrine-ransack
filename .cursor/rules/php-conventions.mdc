@@ -1,0 +1,45 @@
+---
+description: Convenções de código PHP do projeto (src e tests)
+globs: "**/*.php"
+alwaysApply: false
+---
+
+# Convenções PHP
+
+- Compatível com **PHP 8.0**: pode usar constructor promotion, union types, `mixed`, `static` como retorno,
+  named arguments, nullsafe (`?->`), `match`. **Não** use recursos 8.1+ (`readonly`, `enum`, `never`,
+  `new` em inicializador, first-class callable `foo(...)`).
+- PSR-12, 4 espaços, `use` importando classes (sem FQCN inline), um tipo por arquivo.
+- Tipagem explícita em propriedades, parâmetros e retornos.
+- Dependências via constructor promotion `protected`; nada de `private` (classes são extensíveis).
+- Métodos fluentes retornam `static`.
+- Use `#[Pure]` (`JetBrains\PhpStorm\Pure`) em construtores/factories sem efeitos colaterais, como no código existente.
+- Erros de domínio lançam `Paliari\Doctrine\Exceptions\RansackException` e o método declara `@throws RansackException`.
+  Mensagens seguem o padrão: `"Field '$key' not found!"`, `"Relation '$name' not found!"`.
+- Docblocks só quando agregam (`@throws`, `@var Tipo[]` em arrays tipados).
+
+```php
+class FooFactory
+{
+    public function __construct(protected RansackConfig $config)
+    {
+    }
+
+    #[Pure]
+    public function create(QueryBuilderHelper $qbHelper, string $alias = 't'): Foo
+    {
+        return new Foo($this->config, $qbHelper, $alias);
+    }
+}
+```
+
+## Value Objects
+
+- Ficam em `src/VO/`, sufixo `VO`, estendem `Paliari\Utils\VO\AbstractVO`.
+- Apenas propriedades públicas tipadas com default; sem lógica.
+- `paliari/php-utils` está em `require-dev` mas é usado em `src/VO` — ao mexer em dependências,
+  considere movê-lo para `require`.
+
+## Dependências
+
+Não adicione pacotes novos ao `require` sem necessidade clara: é uma lib consumida por terceiros.

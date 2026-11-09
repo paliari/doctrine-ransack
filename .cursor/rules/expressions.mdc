@@ -1,0 +1,44 @@
+---
+description: Como criar ou alterar predicados (expressões) do Ransack
+globs: src/Expressions/**/*.php,src/Factories/ExprFactory.php
+alwaysApply: false
+---
+
+# Predicados (`src/Expressions/Operations`)
+
+Cada predicado é uma classe `{Nome}Expr` que estende `AbstractExpr` (implementa `ExprInterface`)
+e define `public const NAME` com o sufixo usado na chave do filtro (`eq`, `not_cont`, `order_by`...).
+
+```php
+class StartExpr extends AbstractExpr
+{
+    public const NAME = 'start';
+
+    public function create(QueryBuilder $qb, FilterVO $vo): Comparison
+    {
+        $key = $this->fieldKey($vo->field, static::NAME);
+        $qb->setParameter($key, "$vo->value%", $vo->type);
+
+        return $qb->expr()->like($vo->field, ":$key");
+    }
+}
+```
+
+## Regras
+
+- Sempre use parâmetros nomeados via `fieldKey()` (`t_person.name` + `cont` → `:t_person_name_cont`);
+  nunca concatene valores do usuário no DQL. Literais fixos (ex.: `"''"`) são permitidos.
+- Passe `$vo->type` no `setParameter` para conversão correta de tipo do Doctrine.
+- Múltiplos parâmetros: sufixe a chave (`{key}_x`, `{key}_y`, como em `BetweenExpr`).
+- Retorne a expressão (`Comparison`, `Func`, `string`...) para ser combinada com `andWhere`/`orX`.
+  Predicados que alteram o QB diretamente (`order_by`, `group_by`) retornam `null`.
+- Predicados sem valor (`null`, `present`, `blank`) ignoram `$vo->value`; o usuário passa `1`,
+  pois valores vazios são descartados antes (exceção: chaves terminadas em `_null`).
+
+## Checklist para novo predicado
+
+1. Criar `src/Expressions/Operations/{Nome}Expr.php`.
+2. Registrar em `ExprFactory::MAP` (`Nome::NAME => Nome::class`). Mantenha variantes `not_*`
+   antes das positivas — a regex do `ParamExprParser` é gerada a partir do MAP.
+3. Teste de DQL e parâmetros em `tests/TestCases/Unit/WhereTest.php` (`test{Nome}`).
+4. Documentar em `README.md` na seção "List of all possible predicates" (exemplo JSON + SQL).

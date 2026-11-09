@@ -1,0 +1,46 @@
+---
+description: Padrões de testes PHPUnit (unit e functional) do projeto
+globs: tests/**/*.php
+alwaysApply: false
+---
+
+# Testes
+
+- PHPUnit 9, bootstrap `tests/boot.php` cria o EntityManager com SQLite em memória (`Tests\Db::connect()`)
+  e o expõe via `Tests\EM::getEm()`. Schema criado com SQL cru em `Db::migrate()`.
+- Entidades de teste em `tests/models/` (namespace global: `User`, `Person`, `Address`), mapeadas com
+  **annotations** Doctrine. Ao adicionar entidade/coluna, atualize também `Db::migrate()`.
+- Arquivos terminam em `Test.php`; métodos `testXxx()`; namespace `Tests\TestCases\{Unit|Functional}\...`.
+- O projeto mantém cobertura completa de `src/`: todo código novo precisa de teste.
+
+## Unit (`tests/TestCases/Unit`)
+
+Valida o DQL gerado e os parâmetros, sem executar a query. Compare a string **exata** do DQL:
+
+```php
+public function testStart()
+{
+    $where = ['person_name_start' => $this->faker->name];
+    $rb = $this->newRansackBuilder($where);
+    $expectedDql = 'SELECT t FROM User t LEFT JOIN t.person t_person WHERE t_person.name LIKE :t_person_name_start';
+    $this->assertEquals($expectedDql, $rb->getQueryBuilder()->getDQL());
+    $this->assertEquals(
+        $where['person_name_start'] . '%',
+        $rb->getQueryBuilder()->getParameter('t_person_name_start')->getValue(),
+    );
+}
+```
+
+- Erros: `expectException(RansackException::class)` + `expectExceptionMessage('...')` exata.
+
+## Functional (`tests/TestCases/Functional`)
+
+- Estenda `BaseTestFunctional` (recria o banco, limpa tabelas no `tearDown`, expõe `$this->ransack`,
+  `$this->faker` e as factories).
+- Crie dados com `Tests\Factories\*Factory::create()` (usam named args: `person:`, `address:`)
+  e verifique o resultado real (`getResult()` / `getArrayResult()`).
+- Associações customizadas: use `Tests\CustomAssociation` com `new RansackConfig($em, new CustomAssociation())`.
+
+## Dados
+
+Use Faker `pt_BR` (`Factory::create('pt_BR')`) para valores; nada de dados fixos quando o valor não importa.

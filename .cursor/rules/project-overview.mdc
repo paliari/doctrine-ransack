@@ -1,0 +1,48 @@
+---
+description: Visão geral, arquitetura e workflow da lib paliari/doctrine-ransack
+alwaysApply: true
+---
+
+# doctrine-ransack
+
+Biblioteca PHP (`paliari/doctrine-ransack`) de busca avançada para Doctrine ORM, inspirada no Ransack do Rails.
+Converte arrays de filtros (`['person.name_cont' => 'Jhon']`) em DQL via `QueryBuilder`.
+
+- PHP `>=8.0`, `doctrine/orm ^2.8`. Namespace `Paliari\Doctrine\` → `src/` (PSR-4).
+- É uma **lib pública**: preserve a API pública (`Ransack`, `RansackConfig`, `RansackBuilder`,
+  `CustomAssociationInterface`, VOs em `src/VO`). Mudanças quebrando compatibilidade exigem major bump.
+
+## Fluxo principal
+
+1. `Ransack::query($qb, $entityName, $alias)` → cria `QueryBuilderHelper` + `RansackBuilder`.
+2. `RansackBuilder::where(RansackParamsVO)` → `RansackFilterHelper::apply()`:
+   - chaves `or`/`and` viram `orX`/`andX` recursivos; `a_or_b_eq` vira `orX` entre campos;
+   - valores vazios são ignorados (exceto chaves terminadas em `_null`; `'0'` não é vazio).
+3. `ParamExprParser` separa `campo_predicado` pela regex montada a partir de `ExprFactory::MAP`.
+4. `ExprRelationManager` resolve relações por ponto (`person.address.city`) ou underline (`person_address_city`)
+   usando `EntityHelper` (metadata do Doctrine + `CustomAssociationInterface` opcional).
+5. Joins usam `QueryBuilderHelper::tryLeftJoin()` (evita join duplicado); alias do join = `{alias}_{campo}`.
+6. `RansackBuilder::includes()` monta `SELECT` com `partial alias.{id, ...}` (sempre inclui `id`).
+
+## Estrutura
+
+- `src/Expressions/Operations/` – um predicado por classe (`*Expr`).
+- `src/Factories/` – factories simples (sem container de DI); `RansackConfig` agrega as dependências.
+- `src/Helpers/` – integração com Doctrine (`EntityHelper`, `QueryBuilderHelper`, `RansackFilterHelper`).
+- `src/VO/` – Value Objects (estendem `Paliari\Utils\VO\AbstractVO`).
+- `tests/` – `Unit/` (DQL gerado) e `Functional/` (executa no SQLite em memória).
+
+## Comandos
+
+```bash
+composer install
+vendor/bin/phpunit                      # todos
+vendor/bin/phpunit --testsuite Unit     # ou Functional
+bin/code_coverage                       # HTML em tmp/coverage
+```
+
+## Commits
+
+Conventional commits: `feat:`, `fix:`, `refactor:`, `docs:`, `test:`, `chore:`.
+A versão fica em `composer.json` (`"version"`) e é atualizada em commit separado ("Bumps package version").
+Ao adicionar/alterar predicados ou API, atualize o `README.md`.
