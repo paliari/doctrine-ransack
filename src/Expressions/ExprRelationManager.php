@@ -46,6 +46,9 @@ class ExprRelationManager
             }
         }
         $filterRelationVO->field = $this->entityHelper->getField($joinEntityName, $field);
+        if (!$filterRelationVO->field) {
+            throw new RansackException("Field '$vo->key' not found!");
+        }
         $filterRelationVO->type = $this->entityHelper->getTypeOfField($joinEntityName, $field);
 
         return $filterRelationVO;
