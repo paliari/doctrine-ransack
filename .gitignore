@@ -1,6 +1,5 @@
 /tmp
 /vendor/
-/vendor-orm3/
 /.phpunit.cache/
 .DS_Store
 *.dmg
