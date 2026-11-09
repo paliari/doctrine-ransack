@@ -28,8 +28,9 @@
     ],
     "require": {
         "php": ">=8.2",
-        "doctrine/orm": "^2.8 || ^3.3",
-        "paliari/php-utils": "^2.0.2"
+        "doctrine/orm": "^3.7",
+        "doctrine/dbal": "^4.3",
+        "paliari/php-utils": "^3.0"
     },
     "require-dev": {
         "phpunit/phpunit": "^11.5",
