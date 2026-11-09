@@ -8,7 +8,8 @@ alwaysApply: true
 Biblioteca PHP (`paliari/doctrine-ransack`) de busca avançada para Doctrine ORM, inspirada no Ransack do Rails.
 Converte arrays de filtros (`['person.name_cont' => 'Jhon']`) em DQL via `QueryBuilder`.
 
-- PHP `>=8.0`, `doctrine/orm ^2.8`. Namespace `Paliari\Doctrine\` → `src/` (PSR-4).
+- PHP `>=8.2` (testado de 8.2 a 8.5), `doctrine/orm ^2.8`, `paliari/php-utils ^2.0.2`.
+  Namespace `Paliari\Doctrine\` → `src/` (PSR-4).
 - É uma **lib pública**: preserve a API pública (`Ransack`, `RansackConfig`, `RansackBuilder`,
   `CustomAssociationInterface`, VOs em `src/VO`). Mudanças quebrando compatibilidade exigem major bump.
 
@@ -34,12 +35,17 @@ Converte arrays de filtros (`['person.name_cont' => 'Jhon']`) em DQL via `QueryB
 
 ## Comandos
 
+Um serviço por versão de PHP no `docker-compose.yaml` (`php82`, `php83`, `php84`, `php85`).
+O lock é resolvido para a plataforma PHP 8.2 (`config.platform.php`), então serve para todas.
+
 ```bash
-composer install
-vendor/bin/phpunit                      # todos
-vendor/bin/phpunit --testsuite Unit     # ou Functional
-bin/code_coverage                       # HTML em tmp/coverage
+docker compose run --rm php82 composer install
+docker compose run --rm php85                                   # suíte completa
+docker compose run --rm php85 vendor/bin/phpunit --testsuite Unit   # ou Functional
+docker compose run --rm php85 vendor/bin/phpunit --coverage-text    # pcov só na imagem php85
 ```
+
+Antes de liberar versão, rode a suíte nas quatro versões.
 
 ## Commits
 

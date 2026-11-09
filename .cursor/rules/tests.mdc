@@ -6,10 +6,13 @@ alwaysApply: false
 
 # Testes
 
-- PHPUnit 9, bootstrap `tests/boot.php` cria o EntityManager com SQLite em memória (`Tests\Db::connect()`)
+- PHPUnit 11, bootstrap `tests/boot.php` cria o EntityManager com SQLite em memória (`Tests\Db::connect()`)
   e o expõe via `Tests\EM::getEm()`. Schema criado com SQL cru em `Db::migrate()`.
+- `phpunit.xml` falha com deprecation, warning, notice ou risky. O boot habilita `doctrine/deprecations`
+  (`enableWithTriggerError`) e `<source ignoreSuppressionOfDeprecations="true">` faz as deprecations
+  `@trigger_error` do Doctrine aparecerem. Não desligue isso para fazer teste passar.
 - Entidades de teste em `tests/models/` (namespace global: `User`, `Person`, `Address`), mapeadas com
-  **annotations** Doctrine. Ao adicionar entidade/coluna, atualize também `Db::migrate()`.
+  **attributes** (`#[ORM\Entity]`, `#[ORM\Column]`...). Ao adicionar entidade/coluna, atualize também `Db::migrate()`.
 - Arquivos terminam em `Test.php`; métodos `testXxx()`; namespace `Tests\TestCases\{Unit|Functional}\...`.
 - O projeto mantém cobertura completa de `src/`: todo código novo precisa de teste.
 
@@ -20,7 +23,7 @@ Valida o DQL gerado e os parâmetros, sem executar a query. Compare a string **e
 ```php
 public function testStart()
 {
-    $where = ['person_name_start' => $this->faker->name];
+    $where = ['person_name_start' => $this->faker->name()];
     $rb = $this->newRansackBuilder($where);
     $expectedDql = 'SELECT t FROM User t LEFT JOIN t.person t_person WHERE t_person.name LIKE :t_person_name_start';
     $this->assertEquals($expectedDql, $rb->getQueryBuilder()->getDQL());
@@ -43,4 +46,5 @@ public function testStart()
 
 ## Dados
 
-Use Faker `pt_BR` (`Factory::create('pt_BR')`) para valores; nada de dados fixos quando o valor não importa.
+Use Faker (`fakerphp/faker`) `pt_BR` (`Factory::create('pt_BR')`) para valores; nada de dados fixos quando
+o valor não importa. Chame sempre como método (`$this->faker->name()`): acesso como propriedade é deprecated.

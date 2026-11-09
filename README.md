@@ -1,4 +1,9 @@
 # doctrine-ransack
+#### Requirements
+
+- PHP >= 8.2 (tested on 8.2, 8.3, 8.4 and 8.5)
+- Doctrine ORM ^2.8
+
 #### Installation
 	
 	$ composer require paliari/doctrine-ransack
@@ -430,6 +435,16 @@ $where = [
       ```sql 
       WHERE col BETWEEN 10 AND 20
       ```
+
+## Running tests
+
+Each PHP version has a service in `docker-compose.yaml` (`php82`, `php83`, `php84`, `php85`):
+
+```bash
+docker compose run --rm php82 composer install
+docker compose run --rm php85
+docker compose run --rm php85 vendor/bin/phpunit --testsuite Unit
+```
 
 ## Authors
 
