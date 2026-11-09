@@ -139,7 +139,7 @@ class RansackFilterHelper
                 $join->condition,
                 $join->indexBy,
             );
-            $alias .= "_$relationVO->fieldName";
+            $alias = $join->alias;
         }
         $vo->key = $filterRelationVO->field;
 

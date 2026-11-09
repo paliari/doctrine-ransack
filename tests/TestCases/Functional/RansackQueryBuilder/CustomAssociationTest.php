@@ -78,4 +78,42 @@ class CustomAssociationTest extends BaseTestFunctional
         ];
         $this->assertEquals($expected, $rb->getQuery()->getArrayResult());
     }
+
+    public function testFilterWithCustomJoinAlias()
+    {
+        $person1 = $this->personFactory->create();
+        $person2 = $this->personFactory->create();
+        $user1 = $this->userFactory->create([], $person1);
+        $this->userFactory->create([], $person2);
+        $paramsVO = new RansackParamsVO();
+        $paramsVO->where = ['owner.name_eq' => $person1->name];
+        $qb = $this->em->createQueryBuilder()->from(User::class, 't');
+        $rb = $this->ransack->query($qb, User::class, 't')->where($paramsVO)->includes();
+        $expectedDql = 'SELECT t FROM User t LEFT JOIN Person p ' . OrmCompat::arbitraryJoinConditionType()
+            . ' t.email = p.email WHERE p.name = :p_name_eq';
+        $this->assertEquals($expectedDql, $rb->getQueryBuilder()->getDQL());
+        $this->assertEquals([$user1->id], $this->searchIds(User::class, ['owner.name_eq' => $person1->name]));
+    }
+
+    public function testWhereAndIncludesWithCustomJoinAlias()
+    {
+        $person = $this->personFactory->create();
+        $user = $this->userFactory->create([], $person);
+        $paramsVO = new RansackParamsVO();
+        $paramsVO->where = ['owner.name_eq' => $person->name];
+        $includes = [
+            'only' => ['email'],
+            'include' => ['owner' => ['only' => ['name']]],
+        ];
+        $qb = $this->em->createQueryBuilder()->from(User::class, 't');
+        $rb = $this->ransack->query($qb, User::class, 't')->where($paramsVO)->includes($includes);
+        $expectedDql = 'SELECT partial t.{id, email}, partial p.{id, name} FROM User t'
+            . ' LEFT JOIN Person p ' . OrmCompat::arbitraryJoinConditionType() . ' t.email = p.email WHERE p.name = :p_name_eq';
+        $this->assertEquals($expectedDql, $rb->getQueryBuilder()->getDQL());
+        $expected = [
+            ['id' => $user->id, 'email' => $user->email],
+            ['id' => $person->id, 'name' => $person->name],
+        ];
+        $this->assertEquals($expected, $rb->getQuery()->getArrayResult());
+    }
 }
