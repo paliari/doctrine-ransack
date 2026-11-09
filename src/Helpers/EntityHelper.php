@@ -18,12 +18,12 @@ class EntityHelper
 
     public function getRelation(string $entityName, string $alias, string $field): ?RelationVO
     {
-        $mapping = $this->em->getClassMetadata($entityName)->getAssociationMappings();
-        if ($targetEntity = $mapping[$field]['targetEntity'] ?? null) {
+        $classMetadata = $this->em->getClassMetadata($entityName);
+        if ($classMetadata->hasAssociation($field)) {
             $relationVO = new RelationVO();
             $relationVO->entityName = $entityName;
             $relationVO->fieldName = $field;
-            $relationVO->targetEntity = $targetEntity;
+            $relationVO->targetEntity = $classMetadata->getAssociationTargetClass($field);
             $joinVO = new JoinVO();
             $joinVO->join = "$alias.$field";
             $joinVO->alias = "{$alias}_$field";
