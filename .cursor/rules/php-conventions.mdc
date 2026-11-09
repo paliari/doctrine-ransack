@@ -42,7 +42,6 @@ class FooFactory
 ## Dependências
 
 Não adicione pacotes novos ao `require` sem necessidade clara: é uma lib consumida por terceiros.
-O `require` aceita `doctrine/orm ^2.8 || ^3.3` (DBAL 2.13, 3.x ou 4.x): use apenas APIs presentes do
-ORM 2.8 ao 3.x (ex.: `ClassMetadata::hasAssociation()`/`getAssociationTargetClass()`, nunca acesso de array em
-mappings). Quando uma API só existe em uma série, detecte por capacidade (reflection/`method_exists`), como
-`OrderByExpr::direction()` com `\SortDirection`, sem mudar o resultado para a outra série.
+O `require` é `doctrine/orm ^3.7` e `doctrine/dbal ^4.3`: use as APIs atuais sem detecção por versão
+(ex.: `\SortDirection` no `addOrderBy`, `ClassMetadata::hasAssociation()`/`getAssociationTargetClass()`,
+nunca acesso de array em mappings). Dependa de `EntityManagerInterface`, não de `EntityManager`.

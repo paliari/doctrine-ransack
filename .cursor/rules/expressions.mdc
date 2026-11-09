@@ -33,6 +33,9 @@ class StartExpr extends AbstractExpr
 - Passe `$vo->type` no `setParameter` para conversão correta de tipo do Doctrine.
 - Múltiplos parâmetros: passe o sufixo para `parameterKey($qb, $vo->field, static::NAME, '_x')` e use
   `{key}_x`, `{key}_y`, como em `BetweenExpr`.
+- Predicados que exigem uma quantidade fixa de valores validam antes de montar a expressão e lançam
+  `RansackException` (ex.: `Between expects 2 values, got N!`); aceite listas e arrays associativos
+  (`array_values`), e trate valor não-array como um único valor (não use cast `(array)` em objetos).
 - Valores que entram no DQL sem parâmetro (ex.: direção do `order_by`) precisam ser validados contra
   uma lista fechada e lançar `RansackException` se inválidos.
 - Retorne a expressão (`Comparison`, `Func`, `string`...) para ser combinada com `andWhere`/`orX`.

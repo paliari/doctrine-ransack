@@ -2,7 +2,10 @@
 #### Requirements
 
 - PHP >= 8.2 (tested on 8.2, 8.3, 8.4 and 8.5)
-- Doctrine ORM ^2.8 or ^3.3 (tested on 2.20 with DBAL 3, and 3.7 with DBAL 4)
+- Doctrine ORM ^3.7 and DBAL ^4.3
+
+For Doctrine ORM 2.x use the 2.x series (`composer require paliari/doctrine-ransack:^2.3`).
+See [Upgrade to 3.0](#upgrade-to-30).
 
 #### Installation
 	
@@ -93,7 +96,7 @@ class CustomAssociation implements CustomAssociationInterface
             $joinVO = new JoinVO();
             $joinVO->join = Person::class;
             $joinVO->alias = "{$alias}_$field";
-            $joinVO->conditionType = Join::WITH; // Join::ON on doctrine/orm 3.6+
+            $joinVO->conditionType = Join::ON;
             $joinVO->condition = "$alias.email = $joinVO->alias.email";
             $relationVO->join = $joinVO;
 
@@ -105,8 +108,8 @@ class CustomAssociation implements CustomAssociationInterface
 }
 ```
 
-For joins on an entity without association (like above), doctrine/orm 3.6+ deprecates `Join::WITH`
-in favor of `Join::ON`, while doctrine/orm 2.x only understands `Join::WITH`. Pick the one for your version.
+Use `Join::ON` for joins on an entity without association (like above): doctrine/orm deprecates
+`Join::WITH` for them.
 
 Setup with CustomAssociation
 ```php
@@ -137,6 +140,20 @@ $ransackBuilder = $this->ransack
     ->where($paramsVO);
 $users = $ransackBuilder->getQuery()->getResult();
 
+```
+
+Custom associations are joins without a mapped association, so Doctrine does not nest them in the root
+entity. With `includes`, `getArrayResult()` returns alternating rows: the root entity, then the joined
+entity (or `null` when nothing matches):
+
+```php
+$rows = $ransackBuilder->includes($includes)->getQuery()->getArrayResult();
+// [
+//     ['id' => 1, 'email' => 'a@a.com'],
+//     ['id' => 7, 'name' => 'Ana'],
+//     ['id' => 2, 'email' => 'b@b.com'],
+//     null,
+// ]
 ```
 
 ## Filters
@@ -428,6 +445,8 @@ $where = [
       ```
 
   - #### *_between (between in 2 values)
+    Requires exactly 2 values (list or associative array, e.g. `{"from": 10, "to": 20}`);
+    any other amount throws `Paliari\Doctrine\Exceptions\RansackException`.
     - Example: 
   
       ```json
@@ -452,18 +471,27 @@ $paramsVO->orderBy = [new RansackOrderByVO(['field' => 'id', 'order' => RansackO
 
 ## Running tests
 
-Each PHP version has a service in `docker-compose.yaml` (`php82`, `php83`, `php84`, `php85`), using
-doctrine/orm 2.x (`composer.json`). The `*-orm3` services (`php82-orm3`, `php85-orm3`) use doctrine/orm 3.x
-and DBAL 4 (`composer.orm3.json`, installed in `vendor-orm3/`):
+Each PHP version has a service in `docker-compose.yaml` (`php82`, `php83`, `php84`, `php85`):
 
 ```bash
 docker compose run --rm php82 composer install
 docker compose run --rm php85
 docker compose run --rm php85 vendor/bin/phpunit --testsuite Unit
-
-docker compose run --rm php82-orm3 composer install
-docker compose run --rm php85-orm3
 ```
+
+## Upgrade to 3.0
+
+1. Requirements: doctrine/orm ^3.7, doctrine/dbal ^4.3 and paliari/php-utils ^3.0 (PHP >= 8.2 unchanged).
+   Doctrine ORM 2.x users stay on `^2.3`.
+2. `*_between` requires exactly 2 values. A scalar, one value or more than two values now throws
+   `RansackException("Between expects 2 values, got N!")` (it used to emit a warning and bind `null`).
+   Associative arrays with 2 items (`['from' => 1, 'to' => 2]`) are accepted.
+3. `RansackConfig` and `EntityHelper` accept `Doctrine\ORM\EntityManagerInterface` (e.g. decorators).
+   Passing an `EntityManager` keeps working; only subclasses relying on the `$em` property type are affected.
+4. Order directions are passed to Doctrine as `\SortDirection`, so the DQL always renders `ASC`/`DESC`
+   (uppercase) regardless of the case used in `*_order_by` or `RansackOrderByVO`.
+5. Custom associations should use `Join::ON` for joins without a mapped association (`Join::WITH` is
+   deprecated by doctrine/orm for them).
 
 ## Authors
 

@@ -46,8 +46,9 @@ public function testStart()
 - Para checar quais registros um filtro retorna, use `$this->searchIds(Entity::class, $where)`
   (ids ordenados por `id`).
 - Toda correção de bug ganha teste de regressão que falha sem a correção.
-- A suíte roda com ORM 2 e ORM 3. Diferenças de saída entre versões (ex.: `WITH`/`ON` em join arbitrário,
-  caixa da direção no `ORDER BY` do ORM 3.7+) ficam em `Tests\OrmCompat`; não duplique testes por versão.
+- DQL esperado segue o ORM 3.7+: `ORDER BY ... ASC/DESC` sempre em maiúsculo e `ON` em joins sem
+  associação mapeada (`Tests\CustomAssociation`).
+- Casos de entrada inválida da mesma regra: um `#[DataProvider]` com método `public static`.
 - Associações customizadas: use `Tests\CustomAssociation` com `new RansackConfig($em, new CustomAssociation())`.
 
 ## Dados
